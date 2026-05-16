@@ -3,222 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق طرح الأعداد الكسرية التفاعلي</title>
+    <title>تطبيق طرح الأعداد الكسرية - الحذف التفاعلي بالماوس</title>
     <style>
-        /* تنسيقات CSS */
-        body {
+        :root {
+            --primary-color: #4ea8de;
+            --secondary-color: #56cfe1;
+            --success-color: #52b788;
+            --success-dark: #2d6a4f;
+            --danger-color: #ff758f;
+            --danger-dark: #a4133c;
+            --text-color: #2b2d42;
+            --bg-color: #f0f8ff;
+        }
+
+        * {
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-        }
-
-        .app-container {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 700px;
-            width: 90%;
-        }
-
-        h1 { color: #2c3e50; margin-bottom: 30px; }
-
-        .problem-box {
-            background: #eef2f3;
             padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-bottom: 20px;
         }
 
-        .math-text {
-            font-size: 3rem;
+        .container {
+            background-color: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 900px;
+            padding: 35px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #3a86c8;
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn-mode {
+            background-color: #e2eafc;
+            border: 2px solid #ccdbfd;
+            border-radius: 16px;
+            color: #3d5a80;
+            cursor: pointer;
+            font-size: 1.2rem;
             font-weight: bold;
-            color: #34495e;
+            padding: 14px 28px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-mode.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 6px 12px rgba(78, 168, 222, 0.3);
+        }
+
+        .btn-mode:hover:not(.active) {
+            background-color: #d7e3fc;
+        }
+
+        /* تنسيق المسألة البرمجية الكبيرة */
+        .equation-container {
+            direction: ltr;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            font-size: 3.5rem; /* تكبير حجم الخط للمسألة الرئيسية */
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 20px 40px;
+            background-color: #f8f9fa;
+            border-radius: 20px;
+            border: 2px dashed #dee2e6;
+            width: auto;
+        }
+
+        .mixed-number {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .fraction {
-            display: inline-block;
-            text-align: center;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
             vertical-align: middle;
-            font-size: 1.8rem;
-            margin: 0 5px;
+            font-size: 2.5rem; /* حجم الكسور داخل المسألة */
+            line-height: 1;
         }
 
-        .fraction span {
-            display: block;
-            padding: 0 5px;
+        .numerator {
+            border-bottom: 4px solid var(--text-color);
+            padding-bottom: 4px;
+            width: 100%;
+            text-align: center;
         }
 
-        .fraction span.bottom {
-            border-top: 3px solid #34495e;
+        .denominator {
+            padding-top: 4px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* قسم التمثيل البصري الدائري */
+        .visual-section {
+            margin: 30px 0;
+            padding: 25px;
+            background-color: #fffdf6;
+            border-radius: 20px;
+            border: 2px solid #fefae0;
+        }
+
+        .visual-title {
+            font-size: 1.3rem;
+            color: #2b2d42;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .visual-subtitle {
+            font-size: 1.1rem;
+            color: #e63946;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
 
         .visual-display {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 15px;
-            margin: 30px 0;
-            min-height: 120px;
+            gap: 30px;
         }
 
-        /* تمثيل العدد الصحيح */
-        .whole-unit {
-            width: 70px;
-            height: 70px;
-            background-color: #3498db;
-            border: 3px solid #2980b9;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
-            transition: all 0.5s ease;
+        .circle-model {
+            width: 120px;
+            height: 120px;
+            position: relative;
         }
 
-        /* تمثيل الكسر */
-        .fraction-unit {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 2px;
-            width: 74px;
-            height: 74px;
-            background: #ddd;
-            border: 2px solid #999;
-            padding: 2px;
-        }
-
-        .part {
-            background-color: #bdc3c7; /* لون الأجزاء الفارغة */
-            border: 1px solid #fff;
-        }
-
-        .part.active { background-color: #e67e22; } /* لون البسط */
-
-        .instruction-text {
-            font-size: 1.2rem;
-            color: #7f8c8d;
-            margin: 20px 0;
-        }
-
-        button {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            font-size: 1.3rem;
-            border-radius: 50px;
+        .slice-path {
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            transition: 0.3s;
+            transition: fill 0.2s ease;
+        }
+        
+        .slice-path:hover {
+            opacity: 0.85;
         }
 
-        button:hover {
-            background-color: #2ecc71;
-            transform: translateY(-2px);
+        /* تنسيق خيارات الإجابة الكبيرة والمقروءة جداً MCQ */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 35px 0;
+            direction: ltr;
         }
 
-        .result-panel {
-            margin-top: 30px;
-            padding: 20px;
-            border-top: 2px dashed #bdc3c7;
-            display: none;
-            animation: fadeIn 1s;
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .option-btn {
+            background-color: white;
+            border: 4px solid #e9ecef;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 20px; /* زيادة مساحة الضغط */
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.02);
+        }
+
+        /* تكبير حجم الأعداد الكسرية داخل أزرار الاختيارات */
+        .option-btn .mixed-number {
+            font-size: 3.2rem !important; /* حجم العدد الصحيح في الاختيارات */
+            font-weight: bold;
+        }
+
+        .option-btn .fraction {
+            font-size: 2.2rem !important; /* حجم الكسر في الاختيارات */
+        }
+
+        .option-btn .numerator {
+            border-bottom-width: 3px;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 18px rgba(0,0,0,0.08);
+            background-color: #f8f9fa;
+        }
+
+        .option-btn.correct {
+            background-color: #d8f3dc;
+            border-color: #52b788;
+            color: var(--success-dark);
+        }
+
+        .option-btn.wrong {
+            background-color: #ffe5ec;
+            border-color: #ffb3c1;
+            color: var(--danger-dark);
+        }
+
+        /* رسائل التعزيز */
+        .feedback-message {
+            font-size: 1.6rem;
+            font-weight: bold;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+
+        .feedback-success { color: var(--success-dark); animation: bounce 0.5s ease; }
+        .feedback-danger { color: var(--danger-dark); animation: shake 0.4s ease; }
+
+        .btn-next {
+            background-color: #4cc9f0;
+            border: none;
+            border-radius: 18px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 16px 50px;
+            box-shadow: 0 6px 15px rgba(76, 201, 240, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-next:hover {
+            background-color: #4361ee;
+            transform: scale(1.03);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <h1>طرح الأعداد الكسرية بالاستلاف</h1>
-
-    <div class="problem-box">
-        <div class="math-text">
-            5 <div class="fraction"><span>1</span><span class="bottom">7</span></div>
-            - 
-            2 <div class="fraction"><span>4</span><span class="bottom">7</span></div>
-        </div>
-    </div>
-
-    <p id="hint" class="instruction-text">نلاحظ أن 1 أصغر من 4، لذا نحتاج للاستلاف من الـ 5.</p>
-
-    <div id="visual-area" class="visual-display">
-        <!-- سيتم توليد الوحدات بواسطة JS -->
-    </div>
-
-    <button id="btn-action" onclick="handleStep()">استلف من العدد الصحيح</button>
-
-    <div id="result" class="result-panel">
-        <h3>العملية بعد الاستلاف:</h3>
-        <div class="math-text" style="font-size: 2rem;">
-            4 <div class="fraction"><span>8</span><span class="bottom">7</span></div>
-            - 
-            2 <div class="fraction"><span>4</span><span class="bottom">7</span></div>
-            = 
-            <span style="color: #27ae60;">2 <div class="fraction"><span>4</span><span class="bottom">7</span></div></span>
-        </div>
-    </div>
-</div>
-
-<script>
-    let step = 0;
-    const visualArea = document.getElementById('visual-area');
-    const hint = document.getElementById('hint');
-    const btn = document.getElementById('btn-action');
-    const resultPanel = document.getElementById('result');
-
-    // دالة لإنشاء الوحدات المرئية
-    function render(whole, fractionNumerator) {
-        visualArea.innerHTML = '';
+    <div class="container">
+        <h1>لعبة طرح الأعداد الكسرية التفاعلية 🧩</h1>
         
-        // رسم الأعداد الصحيحة
-        for (let i = 0; i < whole; i++) {
-            let div = document.createElement('div');
-            div.className = 'whole-unit';
-            div.innerText = '1';
-            visualArea.appendChild(div);
+        <div class="mode-selector">
+            <button class="btn-mode active" id="modeNormal" onclick="setMode('normal')">طرح عادي (بدون استلاف)</button>
+            <button class="btn-mode" id="modeBorrow" onclick="setMode('borrow')">طرح مع الاستلاف</button>
+        </div>
+
+        <div class="equation-container" id="equation"></div>
+
+        <!-- قسم التفاعل بحذف الأجزاء بالماوس -->
+        <div class="visual-section">
+            <div class="visual-title">👇 اضغط بالماوس على الأجزاء لحذفها وطرحها بنفسك:</div>
+            <div class="visual-subtitle">اضغط على الشريحة الزرقاء لتحويلها إلى (أحمر مع X) لتطرح المقدار المطلوب!</div>
+            <div class="visual-display" id="visualDisplay"></div>
+        </div>
+
+        <div class="feedback-message" id="feedback"></div>
+        
+        <!-- قسم الاختيارات بحجم كبير جداً ومقروء -->
+        <div class="options-grid" id="optionsGrid"></div>
+
+        <button class="btn-next" onclick="generateQuestion()">سؤال جديد ✨</button>
+    </div>
+
+    <script>
+        let currentMode = 'normal';
+        let currentQuestion = {};
+
+        window.onload = function() {
+            generateQuestion();
+        };
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('modeNormal').classList.toggle('active', mode === 'normal');
+            document.getElementById('modeBorrow').classList.toggle('active', mode === 'borrow');
+            generateQuestion();
         }
 
-        // رسم الكسر (مربع مقسم لـ 7 أجزاء)
-        let fracDiv = document.createElement('div');
-        fracDiv.className = 'fraction-unit';
-        for (let i = 0; i < 7; i++) {
-            let p = document.createElement('div');
-            p.className = 'part' + (i < fractionNumerator ? ' active' : '');
-            fracDiv.appendChild(p);
-        }
-        visualArea.appendChild(fracDiv);
-    }
+        function generateQuestion() {
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('feedback').className = 'feedback-message';
 
-    // الخطوة الأولى: العرض المبدئي
-    render(5, 1);
-
-    function handleStep() {
-        if (step === 0) {
-            // تنفيذ عملية الاستلاف
-            render(4, 8); // 4 صحيحة والكسر أصبح 8 أجزاء (7+1)
+            const denominators = [3, 4, 5, 6, 8];
+            const den = denominators[Math.floor(Math.random() * denominators.length)];
             
-            hint.innerHTML = "تم تحويل واحد صحيح إلى 7 أجزاء، فأصبح البسط $1 + 7 = 8$.";
-            btn.innerText = "عرض الناتج النهائي";
-            step = 1;
-        } else if (step === 1) {
-            // عرض النتيجة
-            resultPanel.style.display = 'block';
-            btn.style.display = 'none';
-            hint.innerText = "تمت العملية بنجاح! نطرح الصحيح من الصحيح والكسر من الكسر.";
-        }
-    }
-</script>
+            let w1, n1, w2, n2;
 
+            if (currentMode === 'normal') {
+                w1 = Math.floor(Math.random() * 2) + 3; // 3 أو 4
+                w2 = Math.floor(Math.random() * 2) + 1; // 1 أو 2
+                n1 = Math.floor(Math.random() * (den - 1)) + 1; 
+                n2 = Math.floor(Math.random() * n1) + 1; 
+            } else {
+                w1 = Math.floor(Math.random() * 2) + 3; // 3 أو 4
+                w2 = Math.floor(Math.random() * 2) + 1; // 1 أو 2
+                n2 = Math.floor(Math.random() * (den - 2)) + 2; 
+                n1 = Math.floor(Math.random() * (n2 - 1)) + 1; 
+            }
+
+            let finalWhole, finalNum;
+            if (n1 >= n2) {
+                finalWhole = w1 - w2;
+                finalNum = n1 - n2;
+            } else {
+                finalWhole = (w1 - 1) - w2;
+                finalNum = (n1 + den) - n2;
+            }
+
+            currentQuestion = {
+                w1, n1, w2, n2, den,
+                correct: { w: finalWhole, n: finalNum, d: den }
+            };
+
+            renderEquation();
+            renderInteractiveCircles(w1, n1, den);
+            renderOptions();
+        }
+
+        function renderEquation() {
+            const q = currentQuestion;
+            document.getElementById('equation').innerHTML = `
+                ${createMixedNumberHTML(q.w1, q.n1, q.den)}
+                <span>&minus;</span>
+                ${createMixedNumberHTML(q.w2, q.n2, q.den)}
+                <span>&equals;</span>
+                <span>?</span>
+            `;
+        }
+
+        function createMixedNumberHTML(whole, num, den) {
+            if(num === 0) return `<div class="mixed-number"><span>${whole}</span></div>`;
+            return `
+                <div class="mixed-number">
+                    <span>${whole}</span>
+                    <div class="fraction">
+                        <div class="numerator">${num}</div>
+                        <div class="denominator">${den}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderInteractiveCircles(w1, n1, den) {
+            const display = document.getElementById('visualDisplay');
+            display.innerHTML = '';
+
+            let totalFilledSlices = (w1 * den) + n1;
+            let totalCircles = w1 + (n1 > 0 ? 1 : 0);
+            let sliceGlobalIndex = 0;
+
+            for (let c = 0; c < totalCircles; c++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'circle-model';
+                
+                let svg = `<svg viewBox="0 0 100 100" width="120" height="120" style="transform: rotate(-90deg);">`;
+                const cx = 50, cy = 50, r = 42;
+                
+                let xElements = '';
+
+                for (let i = 0; i < den; i++) {
+                    const angleStart = (i / den) * 360;
+                    const angleEnd = ((i + 1) / den) * 360;
+                    
+                    const radStart = (angleStart * Math.PI) / 180;
+                    const radEnd = (angleEnd * Math.PI) / 180;
+                    
+                    const x1 = cx + r * Math.cos(radStart);
+                    const y1 = cy + r * Math.sin(radStart);
+                    const x2 = cx + r * Math.cos(radEnd);
+                    const y2 = cy + r * Math.sin(radEnd);
+                    
+                    const largeArcFlag = (angleEnd - angleStart) > 180 ? 1 : 0;
+                    
+                    let isAvailable = sliceGlobalIndex < totalFilledSlices;
+                    let fillColor = isAvailable ? '#4ea8de' : '#e9ecef';
+                    
+                    if (isAvailable) {
+                        svg += `<path id="slice-${sliceGlobalIndex}" class="slice-path" d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2} Z" 
+                                      fill="${fillColor}" stroke="#ffffff" stroke-width="2" onclick="toggleSlice(${sliceGlobalIndex})"/>`;
+                        
+                        const midAngle = ((angleStart + angleEnd) / 2) * Math.PI / 180;
+                        const xX = cx + (r * 0.6) * Math.cos(midAngle);
+                        const yX = cy + (r * 0.6) * Math.sin(midAngle);
+                        
+                        xElements += `
+                            <g id="x-mark-${sliceGlobalIndex}" style="display: none; transform: rotate(90deg); transform-origin: ${xX}px ${yX}px;">
+                                <line x1="${xX-4}" y1="${yX-4}" x2="${xX+4}" y2="${yX+4}" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="${xX+4}" y1="${yX-4}" x2="${xX-4}" y2="${yX+4}" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                            </g>
+                        `;
+                    } else {
+                        svg += `<path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArcFlag} 1 ${x2} ${y2} Z" 
+                                      fill="${fillColor}" stroke="#ffffff" stroke-width="2"/>`;
+                    }
+                    
+                    sliceGlobalIndex++;
+                }
+                
+                svg += xElements + `</svg>`;
+                wrapper.innerHTML = svg;
+                display.appendChild(wrapper);
+            }
+        }
+
+        function toggleSlice(index) {
+            const slice = document.getElementById(`slice-${index}`);
+            const xMark = document.getElementById(`x-mark-${index}`);
+            
+            if (slice.getAttribute('fill') === '#4ea8de') {
+                slice.setAttribute('fill', '#ff758f');
+                xMark.style.display = 'block';
+            } else {
+                slice.setAttribute('fill', '#4ea8de');
+                xMark.style.display = 'none';
+            }
+        }
+
+        function renderOptions() {
+            const q = currentQuestion;
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            let options = [{ w: q.correct.w, n: q.correct.n, d: q.den, isCorrect: true }];
+
+            const distractors = [
+                { w: q.correct.w + 1, n: q.correct.n },
+                { w: Math.max(0, q.correct.w - 1), n: q.correct.n },
+                { w: q.correct.w, n: (q.correct.n + 1) % q.den },
+                { w: Math.abs(q.w1 - q.w2), n: Math.abs(q.n1 - q.n2) % q.den }
+            ];
+
+            distractors.forEach(dist => {
+                let isDuplicate = options.some(opt => opt.w === dist.w && opt.n === dist.n);
+                if (!isDuplicate && options.length < 4) {
+                    options.push({ w: dist.w, n: dist.n, d: q.den, isCorrect: false });
+                }
+            });
+
+            while (options.length < 4) {
+                let randomW = Math.floor(Math.random() * 5);
+                let randomN = Math.floor(Math.random() * (q.den - 1)) + 1;
+                if (!options.some(opt => opt.w === randomW && opt.n === randomN)) {
+                    options.push({ w: randomW, n: randomN, d: q.den, isCorrect: false });
+                }
+            }
+
+            options.sort(() => Math.random() - 0.5);
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = createMixedNumberHTML(opt.w, opt.n, opt.d);
+                btn.onclick = () => checkAnswer(btn, opt.isCorrect);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedBtn, isCorrect) {
+            const feedback = document.getElementById('feedback');
+            const allButtons = document.querySelectorAll('.option-btn');
+
+            allButtons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                feedback.innerText = "رائع جداً! إجابة صحيحة 🌟👏";
+                feedback.className = "feedback-message feedback-success";
+            } else {
+                selectedBtn.classList.add('wrong');
+                feedback.innerText = "حاول مرة أخرى! ابحث عن الإجابة بلون أخضر 💡";
+                feedback.className = "feedback-message feedback-danger";
+
+                allButtons.forEach(btn => {
+                    if (btn.outerHTML.includes(createMixedNumberHTML(currentQuestion.correct.w, currentQuestion.correct.n, currentQuestion.den))) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>
