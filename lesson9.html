@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس 9: نفس الكسر بأشكال مختلفة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4cc9f0;
+            --secondary: #4361ee;
+            --accent: #7209b7;
+            --success: #4caf50;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* تنسيق الكسر الرأسي */
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        .fraction .top { border-bottom: 2px solid #334155; padding: 0 5px; line-height: 1.1; }
+        .fraction .bottom { padding: 0 5px; line-height: 1.1; }
+
+        nav {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn { text-decoration: none; color: var(--secondary); font-weight: bold; }
+
+        .lesson-container { max-width: 900px; margin: 30px auto; padding: 20px; }
+
+        .section-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: var(--secondary); border-right: 5px solid var(--accent); padding-right: 15px; }
+
+        /* منطقة التفاعل */
+        .equivalence-zone {
+            background: #f5f3ff;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px dashed var(--accent);
+        }
+
+        .visual-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .shape-container {
+            width: 150px;
+            height: 150px;
+            border: 4px solid #334155;
+            border-radius: 50%;
+            position: relative;
+            background: white;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .part { height: 100%; border-left: 1px solid #cbd5e1; flex: 1; }
+        .filled { background-color: var(--primary); }
+
+        .equal-sign { font-size: 3rem; font-weight: 900; color: var(--accent); }
+
+        .btn-group { margin-top: 20px; }
+
+        .btn {
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Cairo';
+            font-weight: bold;
+            background: var(--accent);
+            color: white;
+            transition: 0.2s;
+            margin: 5px;
+        }
+        .btn:hover { opacity: 0.9; transform: scale(1.05); }
+
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-btn">⬅️ الرئيسية</a>
+    <div><b>الدرس 9:</b> نفس الكسر بأشكال مختلفة</div>
+    <div style="visibility: hidden;">--</div>
+</nav>
+
+<div class="lesson-container">
+
+    <div class="section-card">
+        <h2>💡 ماذا نعني بكسور متكافئة؟</h2>
+        <p>هي كسور لها <b>نفس القيمة</b> ولكنها مكتوبة بأرقام مختلفة. تخيل أنك أكلت "نصف" بيتزا مقطعة لقطعتين، أو أكلت "قطعتين" من بيتزا مقطعة لأربع قطع.. في الحالتين أنت أكلت نفس الكمية!</p>
+    </div>
+
+    <div class="section-card">
+        <h2>🕹️ تحدي تغيير شكل الكسر</h2>
+        <p>اضغط على الأزرار لترى كيف يظل النصف <div class="fraction" style="font-size: 0.8rem;"><span class="top">1</span><span class="bottom">2</span></div> ثابتاً رغم تغير الأرقام:</p>
+
+        <div class="equivalence-zone">
+            <div class="visual-demo">
+                <!-- الكسر الثابت -->
+                <div>
+                    <div class="shape-container">
+                        <div class="part filled"></div>
+                        <div class="part"></div>
+                    </div>
+                    <div class="fraction" style="font-size: 1.5rem; margin-top: 10px;"><span class="top">1</span><span class="bottom">2</span></div>
+                </div>
+
+                <div class="equal-sign">=</div>
+
+                <!-- الكسر المتغير -->
+                <div>
+                    <div class="shape-container" id="visualShape">
+                        <!-- سيتم توليد الأجزاء هنا -->
+                    </div>
+                    <div id="dynamicFrac" class="fraction" style="font-size: 1.5rem; margin-top: 10px;">
+                        <span class="top" id="numText">2</span>
+                        <span class="bottom" id="denText">4</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn" onclick="updateShape(2, 4)">اضرب في 2</button>
+                <button class="btn" onclick="updateShape(3, 6)">اضرب في 3</button>
+                <button class="btn" onclick="updateShape(4, 8)">اضرب في 4</button>
+                <button class="btn" onclick="updateShape(5, 10)">اضرب في 5</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="lesson10.html" class="btn" style="background: var(--secondary); padding: 15px 50px; border-radius: 50px; text-decoration: none;">الدرس 10: الكسور المرجعية ⬅️</a>
+    </div>
+
+</div>
+
+<script>
+    function updateShape(num, den) {
+        const shape = document.getElementById('visualShape');
+        const numText = document.getElementById('numText');
+        const denText = document.getElementById('denText');
+        
+        // تحديث الأرقام
+        numText.innerText = num;
+        denText.innerText = den;
+
+        // تحديث الرسم البصري
+        shape.innerHTML = '';
+        for (let i = 0; i < den; i++) {
+            const div = document.createElement('div');
+            div.className = 'part' + (i < num ? ' filled' : '');
+            shape.appendChild(div);
+        }
+    }
+
+    // تشغيل الحالة الأولى عند التحميل
+    updateShape(2, 4);
+</script>
+
+</body>
+</html>

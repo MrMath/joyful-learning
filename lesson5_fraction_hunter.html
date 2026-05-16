@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فرسان الكسور الاعتيادية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 1rem;
+        }
+        .fraction-line {
+            height: 3px;
+            background-color: #334155;
+            margin: 4px 0;
+            width: 100%;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border: 4px solid #fff;
+        }
+        .option-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+        .ltr-math {
+            direction: ltr;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .error-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="max-w-xl w-full">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="glass-card p-10 text-center">
+            <div class="text-7xl mb-6">🛡️</div>
+            <h1 class="text-4xl font-black text-amber-800 mb-4">فرسان الكسور الاعتيادية</h1>
+            <p class="text-xl text-slate-600 mb-8 leading-relaxed">
+                مرحباً بك أيها الفارس!
+                <br>
+                هل أنت مستعد لحل 5 مسائل في جمع وطرح الكسور <b>متحدة المقام</b>؟
+            </p>
+            <button onclick="startGame()" class="bg-amber-600 hover:bg-amber-700 text-white text-2xl font-bold py-5 px-14 rounded-3xl shadow-xl transform transition-all active:scale-90">
+                ابدأ المغامرة
+            </button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden glass-card p-8 relative">
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="progress-text" class="font-bold text-amber-700 text-lg">المسألة 1 من 5</span>
+                    <div id="stars-container" class="text-2xl text-amber-400">
+                        <!-- Stars will be updated here -->
+                    </div>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="bg-gradient-to-r from-amber-400 to-amber-600 h-full transition-all duration-700" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center justify-center py-12 bg-amber-50/50 rounded-3xl mb-8">
+                <div class="ltr-math text-5xl font-black text-slate-800">
+                    <!-- Fraction 1 -->
+                    <div class="flex flex-col items-center min-w-[60px]">
+                        <span id="num1">?</span>
+                        <div class="fraction-line"></div>
+                        <span id="den1" class="text-amber-600">?</span>
+                    </div>
+                    
+                    <span id="operator" class="text-amber-500 text-4xl font-bold">+</span>
+
+                    <!-- Fraction 2 -->
+                    <div class="flex flex-col items-center min-w-[60px]">
+                        <span id="num2">?</span>
+                        <div class="fraction-line"></div>
+                        <span id="den2" class="text-amber-600">?</span>
+                    </div>
+
+                    <span class="text-slate-400 text-4xl">=</span>
+
+                    <div class="flex flex-col items-center text-amber-600 animate-pulse">
+                        <span>؟</span>
+                        <div class="fraction-line"></div>
+                        <span>؟</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="options-grid" class="grid grid-cols-2 gap-5" dir="ltr">
+                <!-- Buttons injected by JavaScript -->
+            </div>
+
+            <div id="feedback" class="mt-8 h-10 text-center font-bold text-xl opacity-0 transition-all duration-300">
+                رسالة تشجيعية
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden glass-card p-12 text-center">
+            <div class="text-8xl mb-6">🏆</div>
+            <h2 class="text-4xl font-black text-slate-800 mb-4">تم النصر!</h2>
+            <p class="text-2xl text-slate-600 mb-10">لقد أثبتّ جدارتك كفارس للكسور الاعتيادية.</p>
+            <button onclick="location.reload()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-12 rounded-2xl shadow-lg">
+                خوض التحدي من جديد
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = 5;
+        let score = 0;
+        let problem = { n1: 0, n2: 0, den: 0, op: '+', correctAns: null };
+
+        const encouragementMessages = [
+            "حاول مرة أخرى، الفرسان لا يستسلمون! 🛡️",
+            "ركز قليلاً، المقام يبقى كما هو! 💡",
+            "أنت على وشك الوصول للحل الصحيح! ✨",
+            "انظر للمسألة بعناية أكبر 🎯"
+        ];
+
+        const winMessages = [
+            "رائع! إجابة دقيقة ⚔️",
+            "أحسنت! أنت ذكي جداً 🌟",
+            "ممتاز، استمر هكذا 🚀",
+            "ضربة فارس حقيقية! 🏹"
+        ];
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            updateStars();
+            generateProblem();
+        }
+
+        function updateStars() {
+            const container = document.getElementById('stars-container');
+            container.innerHTML = '⭐'.repeat(score) + '◽'.repeat(totalQuestions - score);
+        }
+
+        function generateProblem() {
+            const commonDen = Math.floor(Math.random() * 8) + 3; // مقامات من 3 إلى 10
+            const op = Math.random() > 0.5 ? '+' : '-';
+            
+            let n1, n2;
+            if (op === '+') {
+                n1 = Math.floor(Math.random() * (commonDen - 1)) + 1;
+                n2 = Math.floor(Math.random() * (commonDen - 1)) + 1;
+            } else {
+                n1 = Math.floor(Math.random() * (commonDen - 2)) + 2;
+                n2 = Math.floor(Math.random() * (n1 - 1)) + 1;
+            }
+
+            const resultN = (op === '+') ? (n1 + n2) : (n1 - n2);
+            
+            problem = {
+                n1, n2, den: commonDen, op, 
+                correctAns: { n: resultN, d: commonDen }
+            };
+
+            updateUI();
+            generateOptions();
+        }
+
+        function updateUI() {
+            document.getElementById('num1').innerText = problem.n1;
+            document.getElementById('num2').innerText = problem.n2;
+            document.getElementById('den1').innerText = problem.den;
+            document.getElementById('den2').innerText = problem.den;
+            document.getElementById('operator').innerText = problem.op;
+            document.getElementById('progress-text').innerText = `المسألة ${currentQuestion} من ${totalQuestions}`;
+            document.getElementById('progress-bar').style.width = `${(currentQuestion / totalQuestions) * 100}%`;
+            document.getElementById('feedback').style.opacity = '0';
+        }
+
+        function generateOptions() {
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            
+            // نستخدم Set لضمان عدم تكرار الخيارات
+            const optionsSet = new Set();
+            
+            // 1. الإجابة الصحيحة
+            const correctStr = `${problem.correctAns.n}/${problem.correctAns.d}`;
+            optionsSet.add(correctStr);
+            
+            // 2. مشتت: جمع المقامات (خطأ شائع)
+            optionsSet.add(`${problem.correctAns.n}/${problem.den + problem.den}`);
+            
+            // 3. مشتت: خطأ في البسط
+            optionsSet.add(`${Math.abs(problem.correctAns.n + (Math.random() > 0.5 ? 1 : -1))}/${problem.den}`);
+            
+            // 4. مشتت: بسط عشوائي
+            while(optionsSet.size < 4) {
+                optionsSet.add(`${Math.floor(Math.random() * 10) + 1}/${problem.den}`);
+            }
+
+            // تحويل الـ Set لمصفوفة وخلطها
+            const optionsArray = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+
+            optionsArray.forEach(optStr => {
+                const [n, d] = optStr.split('/');
+                const btn = document.createElement('button');
+                btn.className = "option-btn bg-white border-2 border-amber-200 p-5 rounded-3xl flex flex-col items-center hover:border-amber-500 text-3xl font-bold text-slate-700 shadow-sm";
+                btn.innerHTML = `
+                    <span>${n}</span>
+                    <div class="fraction-line w-10"></div>
+                    <span>${d}</span>
+                `;
+                btn.onclick = () => checkAnswer(parseInt(n), parseInt(d), btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedN, selectedD, btn) {
+            const isCorrect = (selectedN === problem.correctAns.n && selectedD === problem.correctAns.d);
+            const fb = document.getElementById('feedback');
+
+            if (isCorrect) {
+                score++;
+                updateStars();
+                fb.innerText = winMessages[Math.floor(Math.random() * winMessages.length)];
+                fb.className = "mt-8 h-10 text-center font-bold text-xl text-green-600 opacity-100";
+                
+                // تمييز الزر الصحيح وتجميد الباقي
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+                document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+                
+                setTimeout(() => {
+                    if (currentQuestion < totalQuestions) {
+                        currentQuestion++;
+                        generateProblem();
+                    } else {
+                        showFinalResult();
+                    }
+                }, 1500);
+            } else {
+                fb.innerText = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
+                fb.className = "mt-8 h-10 text-center font-bold text-xl text-orange-600 opacity-100";
+                
+                // تأثير الاهتزاز عند الخطأ
+                const gameCard = document.getElementById('game-screen');
+                gameCard.classList.add('error-shake');
+                btn.classList.add('bg-red-50', 'border-red-300', 'opacity-50');
+                btn.disabled = true; // تعطيل الخيار الخاطئ لإجبار الطالب على المحاولة مرة أخرى
+                
+                setTimeout(() => gameCard.classList.remove('error-shake'), 400);
+            }
+        }
+
+        function showFinalResult() {
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار التحدي والمثابرة 🏆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #4cc9f0; --secondary: #4361ee; --accent: #f72585; --success: #2ec4b6; --bg: #f8fafc; }
+        
+        body { font-family: 'Cairo', sans-serif; background: #f1f5f9; text-align: center; padding: 20px; margin: 0; color: #334155; }
+        
+        /* تنسيق الكسر الرأسي الموحد */
+        .fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-family: 'Arial', sans-serif; font-weight: bold; margin: 0 5px; }
+        .fraction .top { border-bottom: 2px solid #334155; padding: 0 5px; line-height: 1.1; }
+        .fraction .bottom { padding: 0 5px; line-height: 1.1; }
+
+        .quiz-card { background: white; max-width: 650px; margin: 20px auto; padding: 30px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .stats { display: flex; justify-content: space-around; margin-bottom: 20px; font-weight: 900; color: var(--secondary); background: #f8fafc; padding: 10px; border-radius: 15px; }
+
+        .question { font-size: 1.6rem; margin-bottom: 25px; min-height: 100px; display: flex; align-items: center; justify-content: center; line-height: 1.6; }
+        
+        .option-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid var(--secondary); border-radius: 15px; cursor: pointer; font-family: 'Cairo'; font-size: 1.3rem; transition: 0.3s; background: white; color: var(--secondary); }
+        .option-btn:hover { background: var(--secondary); color: white; transform: scale(1.02); }
+        .option-btn:hover .fraction .top { border-bottom-color: white; }
+
+        #feedback { margin-top: 20px; font-weight: 900; font-size: 1.3rem; min-height: 3.5rem; padding: 15px; border-radius: 15px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+
+        /* مقياس المثابرة الذاتي */
+        .reflection-card { display: none; margin-top: 30px; padding: 25px; background: #fff7ed; border: 2px dashed #ff9f1c; border-radius: 25px; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .reflect-btn { background: white; border: 2px solid #e2e8f0; border-radius: 15px; padding: 15px; cursor: pointer; transition: 0.3s; flex: 1; font-family: 'Cairo'; }
+        .reflect-btn:hover { border-color: var(--gold); background: #fffbeb; transform: translateY(-5px); }
+
+        .nav-btn { background: var(--secondary); color: white; border: none; padding: 12px 30px; border-radius: 50px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; transition: 0.3s; }
+        .nav-btn:hover { opacity: 0.9; transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+<div class="quiz-card">
+    <!-- العدادات -->
+    <div class="stats">
+        <span>✅ الإجابات: <span id="score">0</span></span>
+        <span>🔥 المحاولات: <span id="streak">0</span></span>
+    </div>
+
+    <!-- حاوية الأسئلة -->
+    <div id="quiz-area">
+        <div class="question" id="qText">استعد لبدء التحدي...</div>
+        <div id="options-container"></div>
+        <div id="feedback"></div>
+    </div>
+
+    <!-- مقياس المثابرة الذاتي (مخفي ويظهر بعد 5 محاولات أو عند الطلب) -->
+    <div id="reflection-section" class="reflection-card">
+        <h3 style="color: #9a3412; margin-top: 0;">🌟 كيف تصف مجهودك الآن؟</h3>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="reflect-btn" onclick="submitReflection('strong')">
+                <span style="font-size: 2rem;">💪</span><p>أشعر بالقوة</p>
+            </button>
+            <button class="reflect-btn" onclick="submitReflection('focus')">
+                <span style="font-size: 2rem;">🧠</span><p>سأركز أكثر</p>
+            </button>
+            <button class="reflect-btn" onclick="submitReflection('retry')">
+                <span style="font-size: 2rem;">🧗</span><p>سأحاول مجدداً</p>
+            </button>
+        </div>
+        <p id="reflection-msg" style="margin-top: 15px; font-weight: bold; color: var(--secondary);"></p>
+    </div>
+
+    <!-- أزرار التحكم -->
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+        <button onclick="generateQuestion()" class="nav-btn" style="background: var(--accent);">سؤال جديد 🔄</button>
+        <a href="index.html" class="nav-btn">الرئيسية 🏠</a>
+    </div>
+</div>
+
+<script>
+    let score = 0;
+    let streak = 0;
+
+    const positiveMsgs = [
+        "رائع! استمر في التقدم 🌟", "مذهل! ذكاؤك يلمع اليوم ✨",
+        "عبقري الكسور! محاولة ممتازة ✅", "أنت بطل حقيقي في الرياضيات 🏆",
+        "ثباتك ومثابرتك هما سر نجاحك 🚀"
+    ];
+
+    const encourageMsgs = [
+        "لا بأس، الخطأ خطوة نحو التعلم 💡", "حاول مرة أخرى، أنت قريب جداً! 🎯",
+        "المثابرون لا يستسلمون أبداً 💪", "ركز قليلاً في القاعدة وستنجح 🧠",
+        "كل محاولة تجعلك أذكى، استمر! 💎"
+    ];
+
+    const questions = [
+        { q: "أي كسر يمثل كسر وحدة؟", options: [{n:1, d:5}, {n:2, d:5}, {n:5, d:5}], correct: "1/5" },
+        { q: "الكسر 3/3 يساوي صحيحاً مقداره:", options: ["0", "1", "3"], correct: "1" },
+        { q: "عند تحليل الكسر 3/5 إلى كسور وحدة يكون:", options: ["1/5+1/5", "1/5+1/5+1/5", "2/5+1/5"], correct: "1/5+1/5+1/5" },
+        { q: "أي كسر هو الأقرب للصفر؟", options: [{n:1, d:8}, {n:4, d:8}, {n:7, d:8}], correct: "1/8" },
+        { q: "الكسر المرجعي لـ 4/8 هو:", options: [{n:0, d:1}, {n:1, d:2}, {n:1, d:1}], correct: "1/2" },
+        { q: "ما هو ناتج 2/7 + 3/7 ؟", options: [{n:5, d:7}, {n:5, d:14}, {n:1, d:7}], correct: "5/7" },
+        { q: "ناتج ضرب 5 × 1/6 يساوي:", options: [{n:5, d:6}, {n:1, d:30}, {n:5, d:30}], correct: "5/6" },
+        { q: "إذا كان البسط متساوياً، فالمقام الأكبر هو الكسر الـ:", options: ["أكبر", "أصغر", "متساوي"], correct: "أصغر" },
+        { q: "العنصر المحايد في الضرب هو:", options: ["0", "1", "البسط"], correct: "1" },
+        { q: "الكسر المكافئ لـ 2/3 هو:", options: [{n:4, d:6}, {n:4, d:5}, {n:2, d:6}], correct: "4/6" },
+        { q: "4 أحاد و 3 أرباع تكتب في صورة عدد كسري:", options: ["4 3/4", "3 4/4", "7/4"], correct: "4 3/4" },
+        { q: "لتحويل 1 1/2 لكسر غير حقيقي نضرب 1×2 ونجمع عليها:", options: ["1", "2", "3"], correct: "1" },
+        { q: "المسافة بين 1/2 و 1 على خط الأعداد تسمى كسر:", options: ["مرجعي", "وحدة", "فعلي"], correct: "مرجعي" },
+        { q: "أي من هذه الكسور أكبر من النصف؟", options: [{n:3, d:4}, {n:1, d:4}, {n:2, d:4}], correct: "3/4" },
+        { q: "في الكسر 5/9، الرقم 9 يسمى:", options: ["بسط", "مقام", "عدد صحيح"], correct: "مقام" },
+        { q: "ناتج 1 - 1/4 يساوي:", options: [{n:3, d:4}, {n:1, d:4}, {n:4, d:4}], correct: "3/4" },
+        { q: "إذا كان 1/3 = 3/x فإن x تساوي:", options: ["6", "9", "3"], correct: "9" },
+        { q: "الكسر الذي بسطه أصغر من مقامه يسمى كسر:", options: ["فعلي", "غير فعلي", "عدد كسري"], correct: "فعلي" },
+        { q: "3 × 1/3 تساوي:", options: ["3/3", "1/3", "3/9"], correct: "3/3" },
+        { q: "عند ضرب أي كسر في 0 يكون الناتج:", options: ["0", "1", "نفس الكسر"], correct: "0" }
+    ];
+
+    function createFractionHTML(n, d) {
+        return `<div class="fraction"><span class="top">${n}</span><span class="bottom">${d}</span></div>`;
+    }
+
+    function generateQuestion() {
+        // إخفاء مقياس التأمل عند طلب سؤال جديد
+        document.getElementById('reflection-section').style.display = 'none';
+        
+        const qObj = questions[Math.floor(Math.random() * questions.length)];
+        document.getElementById('qText').innerHTML = qObj.q;
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        const fb = document.getElementById('feedback');
+        fb.innerText = '';
+        fb.style.background = 'transparent';
+
+        qObj.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            if (typeof opt === 'object') {
+                btn.innerHTML = createFractionHTML(opt.n, opt.d);
+                btn.onclick = () => check(`${opt.n}/${opt.d}`, qObj.correct);
+            } else {
+                btn.innerText = opt;
+                btn.onclick = () => check(opt, qObj.correct);
+            }
+            container.appendChild(btn);
+        });
+    }
+
+    function check(selected, correct) {
+        const fb = document.getElementById('feedback');
+        streak++;
+        document.getElementById('streak').innerText = streak;
+
+        if(selected === correct) {
+            score++;
+            document.getElementById('score').innerText = score;
+            fb.innerText = positiveMsgs[Math.floor(Math.random() * positiveMsgs.length)];
+            fb.style.background = "var(--success)";
+            fb.style.color = "white";
+        } else {
+            fb.innerText = encourageMsgs[Math.floor(Math.random() * encourageMsgs.length)];
+            fb.style.background = "var(--accent)";
+            fb.style.color = "white";
+        }
+
+        // إظهار مقياس المثابرة الذاتي بعد كل 5 محاولات
+        if (streak % 5 === 0) {
+            setTimeout(() => {
+                document.getElementById('reflection-section').style.display = 'block';
+            }, 1000);
+        }
+    }
+
+    function submitReflection(type) {
+        const msg = document.getElementById('reflection-msg');
+        if (type === 'strong') msg.innerHTML = "أنت رائع! قوتك في استمرارك 🌟";
+        else if (type === 'focus') msg.innerHTML = "التركيز سر العبقرية، أنت تتقدم 🧠";
+        else msg.innerHTML = "المثابرون دائماً ما يصلون للقمة. جرب مرة أخرى 💪";
+    }
+
+    generateQuestion();
+</script>
+</body>
+</html>

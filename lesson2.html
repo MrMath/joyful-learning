@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس 2: تحليل الكسور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4cc9f0;
+            --secondary: #4895ef;
+            --accent: #f72585;
+            --success: #4caf50;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #334155;
+        }
+
+        /* تنسيق الكسر الأفقي التربوي */
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        .fraction .top { border-bottom: 2px solid #334155; padding: 0 5px; line-height: 1.1; }
+        .fraction .bottom { padding: 0 5px; line-height: 1.1; }
+        
+        nav {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--secondary);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .lesson-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: var(--secondary); border-right: 5px solid var(--accent); padding-right: 15px; }
+
+        /* منطقة التطبيق التفاعلي */
+        .interactive-box {
+            background: #fff0f6;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .model-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 5px;
+        }
+
+        .block {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+            background: white;
+        }
+
+        .block.selected {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .equation-box {
+            margin-top: 30px;
+            font-size: 1.5rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            background: #000;
+        }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        .next-lesson-btn {
+            background: var(--success);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-btn">⬅️ الرئيسية</a>
+    <div class="lesson-title"><b>الدرس 2:</b> تحليل الكسور</div>
+    <div style="visibility: hidden;">--</div>
+</nav>
+
+<div class="lesson-container">
+
+    <!-- فيديو الشرح -->
+    <div class="section-card">
+        <h2>📺 فيديو المعمل الرقمي</h2>
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- التطبيق التفاعلي -->
+    <div class="section-card">
+        <h2>🕹️ حلل الكسر بنفسك</h2>
+        <p>قم بالضغط على المربعات لتلوينها وشاهد كيف يتحلل الكسر بالأسفل:</p>
+        
+        <div class="interactive-box">
+            <div class="model-container" id="model">
+                <!-- الأجزاء الـ 5 -->
+                <div class="block" onclick="toggleBlock(this)">?</div>
+                <div class="block" onclick="toggleBlock(this)">?</div>
+                <div class="block" onclick="toggleBlock(this)">?</div>
+                <div class="block" onclick="toggleBlock(this)">?</div>
+                <div class="block" onclick="toggleBlock(this)">?</div>
+            </div>
+
+            <div class="equation-box" id="equation">
+                اضغط على المربعات للبدء..
+            </div>
+            
+            <button onclick="resetGame()" style="margin-top:15px; cursor:pointer; padding:5px 15px; border-radius:10px; border:1px solid #ccc;">إعادة المحاولة 🔄</button>
+        </div>
+    </div>
+
+    <!-- ملخص الانفوجرافيك -->
+    <div class="section-card">
+        <h2>💡 تذكر دائماً</h2>
+        <div style="text-align: center;">
+            <p style="font-size: 1.2rem; background: #e0f2fe; padding: 15px; border-radius: 10px;">
+                عندما نقوم بـ <b>تحليل الكسر</b>، نحن نقسمه إلى أجزاء صغيرة (كسور وحدة أو غيرها)، 
+                ولكن <b>المقام</b> يظل ثابتاً لا يتغير!
+            </p>
+            <!-- مساحة لصورة الانفوجرافيك -->
+            <div style="border: 2px dashed #ccc; padding: 40px; border-radius: 15px; color: #999;">
+                [ضع هنا صورة الانفوجرافيك: تحليل 5/5 مثلاً]
+            </div>
+        </div>
+    </div>
+
+    <!-- التنقل -->
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="lesson3.html" class="next-lesson-btn">الدرس التالي: مزيد من التحليل ⬅️</a>
+    </div>
+
+</div>
+
+<script>
+    function toggleBlock(el) {
+        el.classList.toggle('selected');
+        updateEquation();
+    }
+
+    function updateEquation() {
+        const selected = document.querySelectorAll('.block.selected').length;
+        const total = 5;
+        const equationDiv = document.getElementById('equation');
+
+        if (selected === 0) {
+            equationDiv.innerHTML = "اضغط على المربعات للبدء..";
+            return;
+        }
+
+        // بناء الكسر الكلي
+        let html = `
+            <div class="fraction"><span class="top">${selected}</span><span class="bottom">${total}</span></div>
+            <span style="margin: 0 10px;">=</span>
+        `;
+
+        // بناء تحليل كسور الوحدة
+        for (let i = 0; i < selected; i++) {
+            html += `<div class="fraction"><span class="top">1</span><span class="bottom">${total}</span></div>`;
+            if (i < selected - 1) html += `<span style="margin: 0 5px;">+</span>`;
+        }
+
+        equationDiv.innerHTML = html;
+    }
+
+    function resetGame() {
+        document.querySelectorAll('.block').forEach(b => b.classList.remove('selected'));
+        updateEquation();
+    }
+</script>
+
+</body>
+</html>

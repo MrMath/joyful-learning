@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس 11: تطبيقات على الكسور المرجعية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #4cc9f0; --secondary: #4361ee; --accent: #f72585; --success: #4caf50; --bg: #f8fafc; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg); margin: 0; padding: 0; color: #334155; }
+        .fraction { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-family: 'Arial', sans-serif; font-weight: bold; margin: 0 5px; }
+        .fraction .top { border-bottom: 2px solid #334155; padding: 0 5px; line-height: 1.1; }
+        .fraction .bottom { padding: 0 5px; line-height: 1.1; }
+        nav { background: white; padding: 15px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; }
+        .lesson-container { max-width: 900px; margin: 30px auto; padding: 20px; }
+        .section-card { background: white; border-radius: 25px; padding: 30px; margin-bottom: 30px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        h2 { color: var(--secondary); border-right: 5px solid var(--accent); padding-right: 15px; }
+        .app-zone { background: #fff0f3; padding: 30px; border-radius: 20px; text-align: center; }
+        .compare-box { display: flex; justify-content: center; align-items: center; gap: 20px; margin: 20px 0; }
+        .frac-label { background: white; padding: 15px; border-radius: 12px; min-width: 80px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .vs { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
+        .btn { background: var(--secondary); color: white; border: none; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-family: 'Cairo'; font-weight: bold; margin: 5px; transition: 0.2s; }
+        .btn:hover { transform: scale(1.05); background: var(--accent); }
+        .tip { background: #e0f2fe; padding: 15px; border-radius: 12px; margin-top: 20px; font-size: 0.9rem; border-right: 4px solid var(--primary); }
+    </style>
+</head>
+<body>
+<nav>
+    <a href="index.html" style="text-decoration:none; color:var(--secondary); font-weight:bold;">⬅️ الرئيسية</a>
+    <div><b>الدرس 11:</b> تطبيقات الكسور المرجعية</div>
+    <div style="visibility:hidden;">--</div>
+</nav>
+<div class="lesson-container">
+    <div class="section-card">
+        <h2>🧐 كيف نقارن باستخدام المراجع؟</h2>
+        <p>إذا كان لدينا كسران مختلفان، نسأل أنفسنا: هل أحدهما أكبر من <div class="fraction" style="font-size:0.8rem;"><span class="top">1</span><span class="bottom">2</span></div> والآخر أصغر منه؟</p>
+        <div class="tip">
+            <b>مثال:</b> للمقارنة بين <div class="fraction" style="font-size:0.8rem;"><span class="top">2</span><span class="bottom">10</span></div> و <div class="fraction" style="font-size:0.8rem;"><span class="top">7</span><span class="bottom">8</span></div>:<br>
+            • <div class="fraction" style="font-size:0.8rem;"><span class="top">2</span><span class="bottom">10</span></div> أصغر من النصف (قريب من 0).<br>
+            • <div class="fraction" style="font-size:0.8rem;"><span class="top">7</span><span class="bottom">8</span></div> أكبر من النصف (قريب من 1).<br>
+            <b>إذن:</b> <div class="fraction" style="font-size:0.8rem;"><span class="top">7</span><span class="bottom">8</span></div> هو الأكبر!
+        </div>
+    </div>
+    <div class="section-card">
+        <h2>🕹️ تحدي المقارنة المرجعية</h2>
+        <div class="app-zone">
+            <div class="compare-box">
+                <div class="frac-label"><div class="fraction"><span class="top">1</span><span class="bottom">9</span></div></div>
+                <div class="vs">؟</div>
+                <div class="frac-label"><div class="fraction"><span class="top">5</span><span class="bottom">6</span></div></div>
+            </div>
+            <button class="btn" onclick="answer(false)"> الأولى أكبر (>) </button>
+            <button class="btn" onclick="answer(true)"> الثانية أكبر (<) </button>
+            <p id="msg" style="margin-top:15px; font-weight:bold;"></p>
+        </div>
+    </div>
+    <div style="text-align: center;">
+        <a href="lesson12.html" class="btn" style="background:var(--success); padding:15px 40px; border-radius:50px; text-decoration:none;">الدرس 12: العنصر المحايد ⬅️</a>
+    </div>
+</div>
+<script>
+    function answer(isCorrect) {
+        const m = document.getElementById('msg');
+        if(isCorrect) {
+            m.innerHTML = "✅ صحيح! لأن 5/6 قريبة من الواحد، بينما 1/9 قريبة من الصفر.";
+            m.style.color = "var(--success)";
+        } else {
+            m.innerHTML = "❌ فكر مجدداً! قارن كل كسر بالنصف أولاً.";
+            m.style.color = "var(--accent)";
+        }
+    }
+</script>
+</body>
+</html>

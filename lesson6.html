@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس 6: جمع الأعداد الكسرية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4cc9f0;
+            --secondary: #4895ef;
+            --accent: #ff9800;
+            --success: #4caf50;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #334155;
+        }
+
+        /* تنسيق الكسر والعدد الكسري */
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        .fraction .top { border-bottom: 2px solid #334155; padding: 0 5px; line-height: 1.1; }
+        .fraction .bottom { padding: 0 5px; line-height: 1.1; }
+
+        .mixed-num { font-size: 2rem; font-weight: 900; color: var(--secondary); display: flex; align-items: center; justify-content: center; }
+
+        nav {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+        }
+
+        .back-btn { text-decoration: none; color: var(--secondary); font-weight: bold; }
+
+        .lesson-container { max-width: 900px; margin: 30px auto; padding: 20px; }
+
+        .section-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: var(--secondary); border-right: 5px solid var(--accent); padding-right: 15px; }
+
+        /* منطقة الجمع التفاعلي */
+        .sum-machine {
+            background: #fff4e6;
+            padding: 30px;
+            border-radius: 25px;
+            text-align: center;
+        }
+
+        .display-area {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .num-block {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #ddd;
+            min-width: 120px;
+        }
+
+        .controls { display: flex; justify-content: center; gap: 10px; margin-top: 20px; }
+        
+        .btn {
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo';
+            font-weight: bold;
+            color: white;
+            background: var(--primary);
+        }
+
+        .result-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--success);
+            color: white;
+            border-radius: 15px;
+            font-size: 1.8rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-btn">⬅️ الرئيسية</a>
+    <div><b>الدرس 6:</b> جمع الأعداد الكسرية</div>
+    <div style="visibility: hidden;">--</div>
+</nav>
+
+<div class="lesson-container">
+
+    <div class="section-card">
+        <h2>📺 فيديو الشرح: الصحيح مع الصحيح</h2>
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>🕹️ آلة جمع الأعداد الكسرية</h2>
+        <p>جرب تغيير الأرقام وشاهد كيف نجمعها:</p>
+        
+        <div class="sum-machine">
+            <div class="display-area">
+                <!-- العدد الأول -->
+                <div class="num-block">
+                    <div class="mixed-num">
+                        <span id="whole1">1</span>
+                        <div class="fraction"><span class="top" id="num1">1</span><span class="bottom">4</span></div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn" onclick="change(1, 'w', 1)">+</button>
+                        <button class="btn" onclick="change(1, 'n', 1)">+ كسر</button>
+                    </div>
+                </div>
+
+                <span style="font-size: 2rem; font-weight: bold;">+</span>
+
+                <!-- العدد الثاني -->
+                <div class="num-block">
+                    <div class="mixed-num">
+                        <span id="whole2">2</span>
+                        <div class="fraction"><span class="top" id="num2">2</span><span class="bottom">4</span></div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn" onclick="change(2, 'w', 1)">+</button>
+                        <button class="btn" onclick="change(2, 'n', 1)">+ كسر</button>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" style="background:var(--accent); padding:15px 30px;" onclick="calculate()">احسب النتيجة 🟰</button>
+
+            <div class="result-panel" id="result">
+                النتيجة تظهر هنا..
+            </div>
+            <button onclick="reset()" style="margin-top:10px; cursor:pointer; background:none; border:none; color:#666; text-decoration:underline;">إعادة ضبط 🔄</button>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h2>💡 إستراتيجية الحل</h2>
+        <div style="background: #e7f5ff; padding: 20px; border-radius: 15px;">
+            <p>لجمع <span class="mixed-num" style="font-size:1.2rem; display:inline-flex;">1 <div class="fraction"><span class="top">1</span><span class="bottom">4</span></div></span> و <span class="mixed-num" style="font-size:1.2rem; display:inline-flex;">2 <div class="fraction"><span class="top">2</span><span class="bottom">4</span></div></span> :</p>
+            <ol>
+                <li>نجمع الأعداد الصحيحة: <b>1 + 2 = 3</b></li>
+                <li>نجمع البسط مع البسط: <b>1 + 2 = 3</b></li>
+                <li>نكتب المقام كما هو: <b>4</b></li>
+            </ol>
+            <p>الناتج النهائي: <span class="mixed-num" style="font-size:1.4rem; display:inline-flex; color:var(--success)">3 <div class="fraction"><span class="top">3</span><span class="bottom">4</span></div></span></p>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="lesson7.html" class="btn" style="background: var(--success); padding: 15px 40px; border-radius: 50px; font-size: 1.2rem;">الدرس 7: طرح الأعداد الكسرية ⬅️</a>
+    </div>
+
+</div>
+
+<script>
+    let w1 = 1, n1 = 1, w2 = 2, n2 = 2;
+    const den = 4;
+
+    function change(num, type, val) {
+        if (num === 1) {
+            if (type === 'w') w1 += val; else n1 += val;
+        } else {
+            if (type === 'w') w2 += val; else n2 += val;
+        }
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('whole1').innerText = w1;
+        document.getElementById('num1').innerText = n1;
+        document.getElementById('whole2').innerText = w2;
+        document.getElementById('num2').innerText = n2;
+        document.getElementById('result').innerText = "النتيجة تظهر هنا..";
+    }
+
+    function calculate() {
+        let totalW = w1 + w2;
+        let totalN = n1 + n2;
+        
+        // تبسيط بسيط إذا زاد البسط عن المقام (اختياري تربوياً هنا)
+        if (totalN >= den) {
+            // totalW += Math.floor(totalN / den);
+            // totalN = totalN % den;
+        }
+
+        let resHtml = `
+            <div class="mixed-num" style="color:white">
+                ${totalW} 
+                <div class="fraction" style="color:white"><span class="top" style="border-color:white">${totalN}</span><span class="bottom">4</span></div>
+            </div>
+        `;
+        document.getElementById('result').innerHTML = resHtml;
+    }
+
+    function reset() {
+        w1 = 1; n1 = 1; w2 = 2; n2 = 2;
+        updateUI();
+    }
+</script>
+
+</body>
+</html>

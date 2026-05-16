@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدرس 5: جمع وطرح الكسور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4cc9f0;
+            --secondary: #4895ef;
+            --accent: #f72585; /* للطرح */
+            --success: #4caf50; /* للجمع */
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #334155;
+        }
+
+        /* تنسيق الكسر التربوي */
+        .fraction {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            margin: 0 5px;
+        }
+        .fraction .top { border-bottom: 2px solid #334155; padding: 0 5px; line-height: 1.1; }
+        .fraction .bottom { padding: 0 5px; line-height: 1.1; }
+
+        nav {
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn { text-decoration: none; color: var(--secondary); font-weight: bold; }
+
+        .lesson-container { max-width: 900px; margin: 30px auto; padding: 20px; }
+
+        .section-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 { color: var(--secondary); border-right: 5px solid var(--success); padding-right: 15px; }
+
+        /* مختبر العمليات */
+        .lab-box {
+            background: #f1f5f9;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .visual-model {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin: 20px 0;
+        }
+
+        .slice {
+            width: 50px;
+            height: 80px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .slice.plus { background: var(--success); border-color: #2e7d32; }
+        .slice.minus { background: var(--accent); border-color: #c2185b; opacity: 0.3; }
+
+        .controls { margin-top: 25px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Cairo';
+            font-weight: bold;
+            color: white;
+        }
+
+        .equation-area {
+            font-size: 2rem;
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="back-btn">⬅️ الرئيسية</a>
+    <div><b>الدرس 5:</b> جمع وطرح الكسور</div>
+    <div style="visibility: hidden;">--</div>
+</nav>
+
+<div class="lesson-container">
+
+    <!-- فيديو الشرح -->
+    <div class="section-card">
+        <h2>📺 تعلم سر الجمع والطرح</h2>
+        <div style="position: relative; padding-bottom: 56.25%; height: 0; border-radius: 15px; overflow: hidden;">
+            <iframe style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- التطبيق التفاعلي -->
+    <div class="section-card">
+        <h2>🕹️ مختبر الكسور التفاعلي</h2>
+        <p>استخدم الأزرار لإضافة أو حذف الأجزاء وشاهد النتيجة:</p>
+        
+        <div class="lab-box">
+            <div class="visual-model" id="visualModel">
+                <!-- الشرائح ستظهر هنا -->
+            </div>
+
+            <div class="controls">
+                <button class="btn" style="background:var(--success)" onclick="updateValue(1)">أضف كسر وحدة ➕</button>
+                <button class="btn" style="background:var(--accent)" onclick="updateValue(-1)">احذف كسر وحدة ➖</button>
+                <button class="btn" style="background:#64748b" onclick="reset()">إعادة 🔄</button>
+            </div>
+
+            <div class="equation-area" id="equation">
+                <div class="fraction"><span class="top">0</span><span class="bottom">8</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ملخص تربوي -->
+    <div class="section-card">
+        <h2>💡 تذكر يا بطل!</h2>
+        <div style="background: #fff9db; padding: 20px; border-radius: 15px; line-height: 1.8;">
+            <p>عندما نجمع أو نطرح كسوراً لها <b>نفس المقام</b>:</p>
+            <ul>
+                <li>نجمع أو نطرح <b>البسط</b> فقط.</li>
+                <li><b>المقام</b> يظل ثابتاً ولا يتغير أبداً.</li>
+            </ul>
+            <div style="text-align: center; font-size: 1.4rem; margin-top: 10px;">
+                <div class="fraction"><span class="top">2</span><span class="bottom">5</span></div> + 
+                <div class="fraction"><span class="top">1</span><span class="bottom">5</span></div> = 
+                <div class="fraction" style="color:var(--success)"><span class="top">3</span><span class="bottom">5</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center;">
+        <a href="lesson6.html" class="btn" style="background: var(--secondary); padding: 15px 40px; border-radius: 50px;">الدرس 6: جمع الأعداد الكسرية ⬅️</a>
+    </div>
+</div>
+
+<script>
+    let currentCount = 0;
+    const denominator = 8;
+
+    function render() {
+        const model = document.getElementById('visualModel');
+        model.innerHTML = '';
+        
+        for (let i = 0; i < denominator; i++) {
+            const slice = document.createElement('div');
+            slice.className = 'slice';
+            if (i < currentCount) slice.classList.add('plus');
+            model.appendChild(slice);
+        }
+
+        const eq = document.getElementById('equation');
+        eq.innerHTML = `<div class="fraction"><span class="top">${currentCount}</span><span class="bottom">${denominator}</span></div>`;
+    }
+
+    function updateValue(val) {
+        if (currentCount + val >= 0 && currentCount + val <= denominator) {
+            currentCount += val;
+            render();
+        }
+    }
+
+    function reset() {
+        currentCount = 0;
+        render();
+    }
+
+    // التشغيل الأول
+    render();
+</script>
+
+</body>
+</html>
