@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض الفيديو التعليمي 🎥</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --bg: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .video-container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        h2 {
+            color: #334155;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        /* جعل الفيديو متجاوباً ومتناسق الأبعاد (16:9) */
+        .responsive-iframe {
+            position: relative;
+            padding-bottom: 56.25%; /* نسبة الارتفاع إلى العرض 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .responsive-iframe iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .btn-back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 30px;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-back:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="video-container">
+    <h2>📺 شاهد الفيديو التعليمي بتركيز</h2>
+    
+    <!-- حاوية الفيديو التجاوبية -->
+    <div class="responsive-iframe">
+        <!-- تم تعديل الرابط ليتناسب مع التضمين المباشر عبر /preview -->
+        <iframe 
+            src="https://drive.google.com/file/d/1cQoV1VmBhVJRRo51ZsGASEcoNJIw8Rpf/preview" 
+            allow="autoplay; encrypted-media" 
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <a href="index.html" class="btn-back">العودة للرئيسية 🏠</a>
+</div>
+
+</body>
+</html>
