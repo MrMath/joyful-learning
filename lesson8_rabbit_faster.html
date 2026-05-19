@@ -15,6 +15,7 @@
             --danger: #ef4444;
             --background: #f0fdf4;
             --card-bg: #ffffff;
+            --ground: #7bed9f;
         }
 
         * {
@@ -25,6 +26,7 @@
             -webkit-user-select: none;
         }
 
+        /* استخدام خطوط النظام العربية المدمجة فائقة السرعة لتجنب بطء التحميل الشبكي */
         body {
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             min-height: 100vh;
@@ -38,7 +40,7 @@
             direction: rtl;
         }
 
-        /* واجهات الشاشات المخصصة */
+        /* واجهات الشاشات المنبثقة والذكية */
         .screen {
             position: fixed;
             inset: 0;
@@ -120,7 +122,7 @@
             box-shadow: 0 2px 0 #ea580c;
         }
 
-        /* شاشة نهاية اللعبة */
+        /* شاشة نهاية اللعبة وتنسيقاتها */
         .gameover-card {
             border-color: var(--danger);
         }
@@ -152,7 +154,6 @@
             color: var(--primary);
         }
 
-        /* منطقة اللعب الرئيسية */
         #game-container {
             width: 100%;
             max-width: 800px;
@@ -195,9 +196,9 @@
             letter-spacing: 2px;
         }
 
-        /* مسار الجري */
+        /* مسار جري الأرنب */
         .track-container {
-            background: #4ade80;
+            background: var(--ground);
             border-radius: 50px;
             height: 80px;
             position: relative;
@@ -241,7 +242,7 @@
             transition: right linear;
         }
 
-        /* حركات الأرنب */
+        /* حركات الأرنب التفاعلية */
         @keyframes hop {
             0%, 100% { transform: translateY(-50%) translateY(0); }
             50% { transform: translateY(-50%) translateY(-10px); }
@@ -250,7 +251,6 @@
             animation: hop 0.35s infinite ease-in-out;
         }
 
-        /* منطقة المقارنة والبطاقات */
         .arena {
             display: flex;
             justify-content: center;
@@ -272,7 +272,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             text-align: center;
         }
 
@@ -286,7 +286,7 @@
             transform: scale(0.97);
         }
 
-        /* الرسوم الهندسية للكسور */
+        /* الرسوم التوضيحية للكسور */
         .visual-strip {
             width: 100%;
             max-width: 180px;
@@ -330,7 +330,7 @@
             border: 2px solid #e2e8f0;
         }
 
-        /* التنبيهات المنبثقة */
+        /* التنبيهات المنبثقة للتفاعل والتعلم */
         #feedback {
             position: absolute;
             top: 50%;
@@ -386,7 +386,7 @@
             width: 100%;
         }
 
-        /* استجابة الشاشات الصغيرة للموبايل */
+        /* استجابة الشاشات الصغيرة للموبايل والأجهزة اللوحية */
         @media (max-width: 600px) {
             .arena {
                 flex-direction: column;
@@ -434,7 +434,7 @@
         </div>
     </div>
 
-    <!-- شاشة نهاية اللعبة -->
+    <!-- شاشة نهاية اللعبة المخصصة لتجنب استخدام alert() الكارثية -->
     <div id="gameover-screen" class="screen hidden">
         <div class="modal-card gameover-card">
             <div style="font-size: 5rem; margin-bottom: 10px;">🏆</div>
@@ -485,10 +485,11 @@
             </div>
         </div>
 
-        <!-- منطقة مقارنة البطاقات -->
+        <!-- منطقة مقارنة البطاقات (تم إدراج حاويات الرسم الهندسي visual-left و visual-right بشكل دقيق) -->
         <div class="arena">
             <!-- الكسر الأيسر -->
             <div onclick="makeChoice('left')" class="fraction-card">
+                <!-- الحاوية الهندسية للرسم التوضيحي للكسر الأيسر -->
                 <div id="visual-left" class="visual-strip"></div>
                 <div class="numbers">
                     <span id="num-left" class="num-val">1</span>
@@ -501,6 +502,7 @@
 
             <!-- الكسر الأيمن -->
             <div onclick="makeChoice('right')" class="fraction-card">
+                <!-- الحاوية الهندسية للرسم التوضيحي للكسر الأيمن -->
                 <div id="visual-right" class="visual-strip"></div>
                 <div class="numbers">
                     <span id="num-right" class="num-val">1</span>
@@ -596,7 +598,6 @@
             return `<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="border-radius:6px; overflow:hidden;">${segments}</svg>`;
         }
 
-        // توليد سؤال جديد ذكي وسريع جداً وموثوق
         function nextQuestion() {
             clearTimeout(timer);
             
@@ -606,7 +607,7 @@
             let n1, d1, n2, d2;
 
             if (currentMode === 'equal-den') {
-                // وضع المقامات المتساوية (مقام لا يقل عن 3 لتجنب عقم الخيارات)
+                // وضع المقامات المتساوية (مقام لا يقل عن 3 لتجنب عقم الخيارات وتسهيل اللعبة)
                 const commonDen = Math.floor(Math.random() * 8) + 3;
                 d1 = d2 = commonDen;
                 
@@ -635,7 +636,7 @@
             document.getElementById('num-right').innerText = n2;
             document.getElementById('den-right').innerText = d2;
 
-            // رسم الأشرطة الهندسية
+            // رسم الأشرطة الهندسية (الآن تعمل 100% لأن الحاويات موجودة في الـ HTML)
             document.getElementById('visual-left').innerHTML = createFractionSVG(n1, d1, '#4f46e5');
             document.getElementById('visual-right').innerHTML = createFractionSVG(n2, d2, '#f97316');
 
