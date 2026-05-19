@@ -4,251 +4,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة أسرع من الأرنب - مقارنة الكسور</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- استدعاء Tailwind CSS وخط تجول المتميز -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2 family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #ff4757;
-            --secondary: #2f3542;
-            --accent: #ffa502; /* برتقالي مثل الجزر */
-            --sky: #70a1ff;
-            --ground: #7bed9f; /* أخضر مثل العشب */
-        }
-
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #f1f2f6;
-            margin: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
         }
-
-        /* واجهة البداية */
-        #start-screen {
-            position: absolute;
-            inset: 0;
-            background: rgba(47, 53, 66, 0.95);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .mode-btn {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            margin: 10px;
-            border-radius: 50px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: bold;
-            box-shadow: 0 4px 0 #e67e22;
-        }
-
-        .mode-btn:hover { transform: scale(1.1); background: #ff7f50; }
-
-        /* منطقة اللعب */
-        #game-area {
-            width: 100%;
-            max-width: 900px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* لوحة النقاط */
-        .header {
-            display: flex;
-            justify-content: space-around;
-            padding: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            background: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        /* مسار الأرنب */
-        #track {
-            height: 100px;
-            background: var(--ground);
-            position: relative;
-            margin: 20px;
-            border-radius: 50px;
-            border: 4px solid #2ed573;
-            overflow: hidden;
-            background-image: radial-gradient(#ffffff 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        #rabbit {
-            position: absolute;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: right linear;
-            font-size: 50px;
-            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
-        }
-
-        #finish-line {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 15px;
-            background: repeating-linear-gradient(
-                45deg,
-                #fff,
-                #fff 5px,
-                #000 5px,
-                #000 10px
-            );
-        }
-
-        /* منطقة الكسور - تم التعديل للتوسيط المثالي */
-        .fractions-wrapper {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-bottom: 40px; /* مسافة من الأسفل */
-        }
-
-        .fractions-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 50px; /* مسافة أكبر بين الكسرين */
-            width: 100%;
-        }
-
-        .fraction-card {
-            background: white;
-            padding: 35px;
-            border-radius: 35px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            min-width: 160px;
-            border: 6px solid #f1f2f6;
-            text-align: center;
-        }
-
-        .fraction-card:hover { 
-            transform: translateY(-15px) rotate(2deg); 
-            border-color: var(--accent); 
-            background: #fffaf0;
-            box-shadow: 0 20px 40px rgba(255, 165, 2, 0.2);
-        }
-
-        .numerator, .denominator { font-size: 4rem; font-weight: 900; color: var(--secondary); line-height: 1; }
-        .line { border-bottom: 8px solid var(--secondary); margin: 12px auto; width: 80%; border-radius: 10px; }
-
-        .vs-icon {
-            font-size: 3.5rem;
-            background: #fff;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 4px solid var(--sky);
-        }
-
-        /* التنبيهات */
-        #feedback {
-            position: absolute;
-            top: 55%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 5rem;
-            font-weight: bold;
-            pointer-events: none;
-            opacity: 0;
-            transition: 0.3s;
-            z-index: 100;
-            text-shadow: 4px 4px 0 white;
-            white-space: nowrap;
-        }
-
-        .correct { color: #2ed573; opacity: 1 !important; animation: bounce 0.6s; }
-        .wrong { color: var(--primary); opacity: 1 !important; animation: shake 0.6s; }
-
-        @keyframes bounce { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.3); } }
-        @keyframes shake { 0%, 100% { margin-left: 0; } 20% { margin-left: -30px; } 40% { margin-left: 30px; } 60% { margin-left: -15px; } 80% { margin-left: 15px; } }
-        
         /* حركة قفز للأرنب */
         @keyframes hop {
-            0%, 100% { transform: translateY(-50%); }
-            50% { transform: translateY(-85%); }
+            0%, 100% { transform: translateY(-50%) translateY(0); }
+            50% { transform: translateY(-50%) translateY(-15px); }
         }
-        .hopping { animation: hop 0.4s infinite; }
+        .hopping {
+            animation: hop 0.4s infinite ease-in-out;
+        }
+        /* تأثير اهتزاز الإجابة الخاطئة */
+        @keyframes shake {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            15% { transform: translate(-50%, -50%) scale(1.1) translateX(-15px); }
+            30% { transform: translate(-50%, -50%) scale(1.1) translateX(15px); }
+            45% { transform: translate(-50%, -50%) scale(1.1) translateX(-10px); }
+            60% { transform: translate(-50%, -50%) scale(1.1) translateX(10px); }
+        }
+        .shaking {
+            animation: shake 0.5s ease-in-out forwards;
+        }
+        /* تأثير النبض للإجابة الصحيحة */
+        @keyframes pop {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.3); }
+        }
+        .popping {
+            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
     </style>
 </head>
-<body>
+<body class="min-h-screen bg-gradient-to-b from-sky-100 to-indigo-50 flex flex-col items-center justify-between p-4 md:p-6 overflow-x-hidden relative select-none">
 
-    <div id="start-screen">
-        <div style="font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));">🐰</div>
-        <h1 style="font-size: 3rem;">🥕 أسرع من الأرنب</h1>
-        <p style="font-size: 1.5rem; max-width: 500px;">ساعد الأرنب في الوصول لجزراته باختيار الكسر الأكبر بسرعة قبل أن يسبقك!</p>
-        <button class="mode-btn" onclick="startGame('equal-den')">مقارنة كسور متساوية المقام</button>
-        <button class="mode-btn" onclick="startGame('equal-num')">مقارنة كسور متساوية البسط</button>
-        <div style="margin-top: 30px; font-style: italic; color: #ddd;">التحدي: كلما زاد مستواك، زادت سرعة الأرنب!</div>
+    <!-- عناصر جمالية عائمة بالخلفية -->
+    <div class="fixed top-10 right-10 text-yellow-300/40 pointer-events-none animate-bounce duration-1000 hidden md:block">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </div>
+    <div class="fixed bottom-10 left-10 text-orange-300/30 pointer-events-none animate-pulse hidden md:block">
+        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
     </div>
 
-    <div id="game-area">
-        <div class="header">
-            <div id="score-display">النقاط: 0</div>
-            <div id="level-display">الجولة: 1</div>
-            <div id="lives-display">المحاولات: ❤️❤️❤️</div>
+    <!-- واجهة البداية التفاعلية -->
+    <div id="start-screen" class="fixed inset-0 bg-slate-900/95 flex flex-col items-center justify-center p-6 text-center z-50 transition-all duration-300">
+        <div class="bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-[3rem] border-4 border-orange-400 max-w-xl w-full shadow-2xl relative">
+            <div class="text-8xl mb-6 drop-shadow-lg transform hover:scale-110 transition-transform duration-300 cursor-pointer">🐰</div>
+            <h1 class="text-4xl md:text-5xl font-black text-white mb-3">أسرع من الأرنب!</h1>
+            <p class="text-orange-300 text-xl font-bold mb-6">مغامرة مقارنة الكسور الشيقة 🥕</p>
+            <p class="text-gray-300 text-base md:text-lg mb-8 leading-relaxed">
+                ساعد صديقنا الأرنب للوصول إلى جزراته اللذيذة باختيار <span class="text-emerald-400 font-extrabold">الكسر الأكبر</span> بسرعة فائقة قبل أن يسبقك ويتناولها كلها!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="startGame('equal-den')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-lg px-6 py-4 rounded-2xl shadow-[0_6px_0_#047857] hover:translate-y-[2px] hover:shadow-[0_4px_0_#047857] active:translate-y-[6px] active:shadow-none transition-all duration-150">
+                    مقارنة كسور متساوية المقام
+                </button>
+                <button onclick="startGame('equal-num')" class="bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-lg px-6 py-4 rounded-2xl shadow-[0_6px_0_#b45309] hover:translate-y-[2px] hover:shadow-[0_4px_0_#b45309] active:translate-y-[6px] active:shadow-none transition-all duration-150">
+                    مقارنة كسور متساوية البسط
+                </button>
+            </div>
+            <div class="mt-8 text-gray-400 text-xs italic">تلميح: كلما تقدمت في الجولات، زادت سرعة قفز الأرنب! 🚀</div>
         </div>
+    </div>
 
-        <div id="track">
-            <div id="finish-line"></div>
-            <div id="rabbit" class="hopping">
+    <!-- شاشة نهاية اللعبة المخصصة وبديلة الـ Alert -->
+    <div id="gameover-screen" class="fixed inset-0 bg-slate-950/90 flex flex-col items-center justify-center p-6 text-center z-50 hidden opacity-0 transition-all duration-300">
+        <div class="bg-white p-8 md:p-12 rounded-[3rem] max-w-md w-full shadow-2xl border-8 border-rose-500 relative">
+            <div class="text-7xl mb-4">🏆</div>
+            <h2 class="text-3xl md:text-4xl font-black text-slate-800 mb-2">انتهت المغامرة!</h2>
+            <p id="gameover-sub" class="text-slate-500 text-lg mb-6">لقد تناول الأرنب كل الجزر 🥕</p>
+            
+            <div class="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="text-center border-l border-slate-200">
+                        <span class="block text-xs text-slate-400 font-bold uppercase mb-1">النقاط النهائية</span>
+                        <span id="gameover-score" class="text-3xl font-black text-indigo-600">0</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="block text-xs text-slate-400 font-bold uppercase mb-1">الجولة المحققة</span>
+                        <span id="gameover-level" class="text-3xl font-black text-amber-500">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="backToMainMenu()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl py-4 rounded-2xl shadow-[0_6px_0_#4338ca] hover:translate-y-[2px] hover:shadow-[0_4px_0_#4338ca] active:translate-y-[6px] active:shadow-none transition-all duration-150 mb-3">
+                العب مجدداً 🎮
+            </button>
+        </div>
+    </div>
+
+    <!-- مساحة اللعب الرئيسية -->
+    <div id="game-container" class="w-full max-w-4xl flex-1 flex flex-col justify-between gap-6 opacity-0 transition-opacity duration-300">
+        
+        <!-- لوحة التحكم العلوية والعدادات -->
+        <header class="bg-white/80 backdrop-blur-md rounded-3xl p-4 md:p-6 shadow-lg flex items-center justify-between border-2 border-white">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">⭐️</span>
+                <div>
+                    <span class="text-xs text-slate-400 block font-bold leading-none">النقاط</span>
+                    <span id="score-display" class="text-2xl font-black text-indigo-600">0</span>
+                </div>
+            </div>
+            <div class="bg-indigo-50 border border-indigo-100 rounded-2xl px-6 py-2">
+                <span id="level-display" class="text-xl font-extrabold text-indigo-800">الجولة: 1</span>
+            </div>
+            <div class="text-left">
+                <span class="text-xs text-slate-400 block font-bold leading-none mb-1 text-right">المحاولات</span>
+                <span id="lives-display" class="text-2xl tracking-wider">❤️❤️❤️</span>
+            </div>
+        </header>
+
+        <!-- مسار الأرنب الحماسي -->
+        <div class="bg-emerald-400 rounded-full h-24 relative border-4 border-emerald-500 shadow-inner overflow-hidden flex items-center px-4">
+            <!-- خط النهاية (كومة من الجزر اللذيذ) -->
+            <div id="finish-line" class="absolute left-0 top-0 bottom-0 w-24 bg-emerald-500/30 flex items-center justify-center border-r-4 border-dashed border-emerald-600">
+                <span class="text-5xl animate-pulse filter drop-shadow">🥕</span>
+            </div>
+            
+            <!-- الأرنب المتحرك -->
+            <div id="rabbit" class="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-16 flex items-center justify-center z-10 text-5xl filter drop-shadow-md transition-all duration-300">
                 <span>🐰</span>
             </div>
+            
+            <!-- عشب خلفي زخرفي -->
+            <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#fff_20%,transparent_20%)] bg-[length:16px_16px]"></div>
         </div>
 
-        <div class="fractions-wrapper">
-            <div class="fractions-container">
-                <div class="fraction-card" id="card-left" onclick="checkChoice('left')">
-                    <div class="numerator" id="num-left">1</div>
-                    <div class="line"></div>
-                    <div class="denominator" id="den-left">2</div>
+        <!-- منطقة المقارنة والبطاقات التفاعلية مع الرسوم الهندسية -->
+        <div class="flex-1 flex flex-col justify-center items-center py-4 relative">
+            <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center w-full max-w-3xl">
+                
+                <!-- الكسر الأيسر -->
+                <div onclick="checkChoice('left')" class="md:col-span-5 bg-white hover:bg-orange-50/50 p-6 rounded-[2.5rem] shadow-xl border-4 border-white hover:border-orange-400 active:scale-95 cursor-pointer transition-all duration-200 flex flex-col items-center gap-4 text-center group">
+                    <!-- التمثيل الهندسي للكسر الأيسر -->
+                    <div id="visual-left" class="w-full h-16 flex items-center justify-center">
+                        <!-- يتم رسمه برمجياً -->
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="num-left" class="text-6xl font-black text-slate-800 leading-none">1</span>
+                        <div class="w-24 h-2 bg-slate-800 my-2 rounded-full group-hover:bg-orange-400 transition-colors"></div>
+                        <span id="den-left" class="text-6xl font-black text-slate-800 leading-none">2</span>
+                    </div>
                 </div>
 
-                <div class="vs-icon">⚖️</div>
-
-                <div class="fraction-card" id="card-right" onclick="checkChoice('right')">
-                    <div class="numerator" id="num-right">1</div>
-                    <div class="line"></div>
-                    <div class="denominator" id="den-right">3</div>
+                <!-- أيقونة المقارنة في الوسط -->
+                <div class="md:col-span-1 flex justify-center">
+                    <div class="bg-white/90 backdrop-blur-md w-16 h-16 rounded-full flex items-center justify-center shadow-md border-2 border-indigo-200 text-3xl font-black text-indigo-500">
+                        ⚖️
+                    </div>
                 </div>
+
+                <!-- الكسر الأيمن -->
+                <div onclick="checkChoice('right')" class="md:col-span-5 bg-white hover:bg-orange-50/50 p-6 rounded-[2.5rem] shadow-xl border-4 border-white hover:border-orange-400 active:scale-95 cursor-pointer transition-all duration-200 flex flex-col items-center gap-4 text-center group">
+                    <!-- التمثيل الهندسي للكسر الأيمن -->
+                    <div id="visual-right" class="w-full h-16 flex items-center justify-center">
+                        <!-- يتم رسمه برمجياً -->
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="num-right" class="text-6xl font-black text-slate-800 leading-none">1</span>
+                        <div class="w-24 h-2 bg-slate-800 my-2 rounded-full group-hover:bg-orange-400 transition-colors"></div>
+                        <span id="den-right" class="text-6xl font-black text-slate-800 leading-none">3</span>
+                    </div>
+                </div>
+
             </div>
-        </div>
-    </div>
 
-    <div id="feedback"></div>
+            <!-- منبثق التغذية الراجعة الطائرة -->
+            <div id="feedback" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-center z-30 pointer-events-none opacity-0 drop-shadow-[0_4px_8px_rgba(0,0,0,0.15)] bg-white/90 px-8 py-4 rounded-3xl border-4"></div>
+        </div>
+
+        <!-- تذييل الصفحة التعليمي والتحكم -->
+        <footer class="text-center text-slate-500 font-bold text-sm bg-white/50 backdrop-blur-sm py-3 rounded-2xl border border-white/40">
+            اضغط على بطاقة <span class="text-indigo-600 font-extrabold">الكسر الأكبر</span> قيمة للفوز بالجولة! 🥕
+        </footer>
+
+    </div>
 
     <script>
         let score = 0;
@@ -256,60 +192,153 @@
         let lives = 3;
         let currentMode = '';
         let timer;
-        let speed = 5000;
+        let speed = 5000; // السرعة الابتدائية بالملي ثانية
         let rightAnswer = '';
 
+        // نظام المؤثرات الصوتية البرمجي لعدم الاعتماد على ملفات خارجية
+        const playSound = (type) => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(80, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.35);
+                } else if (type === 'gameover') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    osc.frequency.setValueAtTime(250, ctx.currentTime + 0.15);
+                    osc.frequency.setValueAtTime(180, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.6);
+                }
+            } catch (e) { 
+                console.log("Audio API not supported or user gesture required first.");
+            }
+        };
+
+        // دالة بدء اللعبة
         function startGame(mode) {
             currentMode = mode;
             score = 0;
             level = 1;
             lives = 3;
-            speed = 5000;
-            document.getElementById('start-screen').style.display = 'none';
+            speed = 5200; // ضبط السرعة الابتدائية المناسبة والمدرجة
+            
+            // إخفاء شاشات التغطية وعرض الشاشة الرئيسية للعب
+            document.getElementById('start-screen').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                document.getElementById('start-screen').style.display = 'none';
+                const gameContainer = document.getElementById('game-container');
+                gameContainer.classList.remove('opacity-0');
+                gameContainer.classList.add('opacity-100');
+            }, 300);
+
             updateUI();
             nextQuestion();
         }
 
+        // دالة توليد الأشرطة الهندسية (Fraction Strips SVG) لتوضيح الحجم الرياضي
+        function generateStripSVG(numerator, denominator, color) {
+            const width = 220;
+            const height = 40;
+            const step = width / denominator;
+            let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="rounded-lg border-2 border-slate-300 shadow-sm overflow-hidden bg-slate-100">`;
+            
+            for (let i = 0; i < denominator; i++) {
+                const fill = i < numerator ? color : '#f1f5f9';
+                svg += `<rect x="${i * step}" y="0" width="${step}" height="${height}" fill="${fill}" stroke="#94a3b8" stroke-width="1.5" />`;
+            }
+            
+            svg += `</svg>`;
+            return svg;
+        }
+
+        // دالة توليد الأسئلة بدون أي حلقة تكرار لانهائية
         function nextQuestion() {
             clearTimeout(timer);
+            
+            // إخفاء التغذية الراجعة
             const feedback = document.getElementById('feedback');
-            feedback.className = '';
+            feedback.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-black text-center z-30 pointer-events-none opacity-0 drop-shadow-md bg-white/90 px-8 py-4 rounded-3xl border-4';
             
             let n1, d1, n2, d2;
-            const common = Math.floor(Math.random() * 8) + 2;
 
             if (currentMode === 'equal-den') {
-                d1 = d2 = common;
-                n1 = Math.floor(Math.random() * (common - 1)) + 1;
-                do { n2 = Math.floor(Math.random() * (common - 1)) + 1; } while (n1 === n2);
+                // وضع المقامات المتساوية (المنطق المعدل للوقاية التامة من التجمد)
+                // المقامات تبدأ من 3 لتجنب مشكلة البسط الوحيد المكرر
+                const commonDen = Math.floor(Math.random() * 8) + 3; // مقام بين 3 و 10
+                d1 = d2 = commonDen;
+                
+                n1 = Math.floor(Math.random() * (commonDen - 1)) + 1; // بسط أصغر من المقام
+                do {
+                    n2 = Math.floor(Math.random() * (commonDen - 1)) + 1;
+                } while (n1 === n2); // هذا لن يعلق أبداً لأن المقام لا يقل عن 3 ولديه قيمتان مختلفتان على الأقل للبسط
+
                 rightAnswer = n1 > n2 ? 'left' : 'right';
             } else {
-                n1 = n2 = common;
-                d1 = Math.floor(Math.random() * 10) + common + 1;
-                do { d2 = Math.floor(Math.random() * 10) + common + 1; } while (d1 === d2);
-                rightAnswer = d1 < d2 ? 'left' : 'right';
+                // وضع البسوط المتساوية
+                const commonNum = Math.floor(Math.random() * 5) + 1; // بسط بين 1 و 5
+                n1 = n2 = commonNum;
+                
+                // المقامات تبدأ دائماً برقم أكبر من البسط الموحد
+                d1 = Math.floor(Math.random() * 6) + commonNum + 1;
+                do {
+                    d2 = Math.floor(Math.random() * 6) + commonNum + 1;
+                } while (d1 === d2);
+
+                rightAnswer = d1 < d2 ? 'left' : 'right'; // المقام الأصغر يعطي الكسر الأكبر قيمة
             }
 
+            // تطبيق القيم في الـ DOM
             document.getElementById('num-left').innerText = n1;
             document.getElementById('den-left').innerText = d1;
             document.getElementById('num-right').innerText = n2;
             document.getElementById('den-right').innerText = d2;
 
+            // توليد الرسوم التوضيحية لزيادة الفهم الهندسي
+            document.getElementById('visual-left').innerHTML = generateStripSVG(n1, d1, '#4f46e5');
+            document.getElementById('visual-right').innerHTML = generateStripSVG(n2, d2, '#f59e0b');
+
+            // إعداد الأرنب وبدء الجري
             const rabbit = document.getElementById('rabbit');
             rabbit.style.transition = 'none';
+            // يبدأ من أقصى اليمين (في اتجاه RTL، 0% تعني البقاء في مكانه والتقدم يساراً يزيد النسبة)
             rabbit.style.right = '0%';
             rabbit.classList.add('hopping');
             
+            // بدء تقدم الأرنب بسلاسة تامة بعد تهيئة الموضع
             setTimeout(() => {
                 rabbit.style.transition = `right ${speed}ms linear`;
-                rabbit.style.right = 'calc(100% - 80px)';
+                // يصل إلى خط النهاية على بعد كافٍ لعدم التداخل مع الجزر
+                rabbit.style.right = 'calc(100% - 130px)';
                 
+                // مؤقت الفشل في حال انتهاء الوقت دون إجابة
                 timer = setTimeout(() => {
-                    handleFailure("لقد فاز الأرنب! 🥕");
+                    handleFailure("تناول الأرنب الجزر! 🥕");
                 }, speed);
             }, 50);
         }
 
+        // فحص اختيار اللاعب
         function checkChoice(choice) {
             clearTimeout(timer);
             const rabbit = document.getElementById('rabbit');
@@ -323,41 +352,84 @@
             }
         }
 
+        // التعامل مع الإجابة الصحيحة
         function handleSuccess() {
+            playSound('correct');
             score += 10 + Math.floor(level * 2);
             level++;
-            speed = Math.max(1200, speed - 400); 
+            // زيادة الصعوبة عبر إنقاص الوقت المتاح للأرنب
+            speed = Math.max(1000, speed - 350); 
             
             const fb = document.getElementById('feedback');
             fb.innerText = "أنت أسرع منه! 🏆";
-            fb.className = "correct";
+            fb.classList.add('popping', 'text-emerald-500', 'border-emerald-300');
             
             updateUI();
-            setTimeout(nextQuestion, 1000);
+            setTimeout(nextQuestion, 1200);
         }
 
+        // التعامل مع الإجابة الخاطئة أو انتهاء الوقت
         function handleFailure(msg) {
+            playSound('wrong');
             lives--;
+            
             const fb = document.getElementById('feedback');
             fb.innerText = msg;
-            fb.className = "wrong";
+            fb.classList.add('shaking', 'text-rose-500', 'border-rose-300');
             
             updateUI();
             
             if (lives <= 0) {
-                setTimeout(() => {
-                    alert(`انتهت المغامرة! نقاطك النهائية: ${score}`);
-                    document.getElementById('start-screen').style.display = 'flex';
-                }, 1000);
+                setTimeout(showGameOver, 1200);
             } else {
                 setTimeout(nextQuestion, 1500);
             }
         }
 
+        // تحديث واجهة المستخدم العلوية
         function updateUI() {
-            document.getElementById('score-display').innerText = `النقاط: ${score}`;
+            document.getElementById('score-display').innerText = score;
             document.getElementById('level-display').innerText = `الجولة: ${level}`;
-            document.getElementById('lives-display').innerText = `المحاولات: ${"❤️".repeat(lives)}`;
+            document.getElementById('lives-display').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
+        }
+
+        // عرض واجهة الخسارة ونهاية اللعبة
+        function showGameOver() {
+            playSound('gameover');
+            
+            // تعبئة البيانات في الشاشة النهائية
+            document.getElementById('gameover-score').innerText = score;
+            document.getElementById('gameover-level').innerText = level - 1;
+            
+            if (score > 100) {
+                document.getElementById('gameover-sub').innerText = "رائع! لقد أبليت بلاءً حسناً في الحفاظ على الجزر! 🎉";
+            } else {
+                document.getElementById('gameover-sub').innerText = "لقد تناول الأرنب الجزر كله هذه المرة 🥕";
+            }
+
+            const goScreen = document.getElementById('gameover-screen');
+            goScreen.classList.remove('hidden');
+            setTimeout(() => {
+                goScreen.classList.add('opacity-100');
+            }, 50);
+        }
+
+        // العودة للواجهة الرئيسية لبدء جولة جديدة
+        function backToMainMenu() {
+            const goScreen = document.getElementById('gameover-screen');
+            goScreen.classList.remove('opacity-100');
+            
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.classList.add('opacity-0');
+
+            setTimeout(() => {
+                goScreen.classList.add('hidden');
+                const startScreen = document.getElementById('start-screen');
+                startScreen.style.display = 'flex';
+                setTimeout(() => {
+                    startScreen.classList.remove('scale-95', 'opacity-0');
+                }, 50);
+            }, 300);
         }
     </script>
 </body>
