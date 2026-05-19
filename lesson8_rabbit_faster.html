@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة أسرع من الأرنب - مقارنة الكسور</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --primary: #4f46e5;
             --primary-hover: #4338ca;
             --secondary: #0f172a;
-            --accent: #f97316;
+            --accent: #ffa502; /* برتقالي مثل الجزر */
             --success: #10b981;
             --danger: #ef4444;
             --background: #f0fdf4;
@@ -30,7 +26,8 @@
         }
 
         body {
-            font-family: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* استخدام خطوط النظام مسبقة التثبيت لسرعة تحميل فورية (0 ميللي ثانية) */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             min-height: 100vh;
             background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
             display: flex;
@@ -55,7 +52,7 @@
             z-index: 100;
             text-align: center;
             padding: 20px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .screen.hidden {
@@ -131,7 +128,6 @@
 
         .stats-grid {
             display: grid;
-            grid-cols: 2;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
             margin-bottom: 25px;
@@ -351,7 +347,7 @@
             z-index: 30;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #feedback.show-correct {
@@ -421,6 +417,7 @@
 </head>
 <body>
 
+    <!-- شاشة البداية السريعة -->
     <div id="start-screen" class="screen">
         <div class="modal-card">
             <div style="font-size: 5.5rem; margin-bottom: 10px;">🐰</div>
@@ -438,6 +435,7 @@
         </div>
     </div>
 
+    <!-- شاشة نهاية اللعبة -->
     <div id="gameover-screen" class="screen hidden">
         <div class="modal-card gameover-card">
             <div style="font-size: 5rem; margin-bottom: 10px;">🏆</div>
@@ -461,6 +459,7 @@
         </div>
     </div>
 
+    <!-- مساحة اللعب الأساسية -->
     <div id="game-container">
         <!-- شريط المؤشرات العلوي -->
         <header class="game-header">
@@ -477,7 +476,7 @@
             </div>
         </header>
 
-        <!-- مسار السباق -->
+        <!-- مسار السباق التفاعلي -->
         <div class="track-container">
             <div class="finish-gate">
                 <span>🥕</span>
@@ -516,7 +515,7 @@
         </div>
 
         <div class="footer-note">
-            اضغط على الكسر ذو <span style="color: var(--primary);">القيمة الأكبر</span> قبل وصول الأرنب لخط النهاية!
+            اضغط على الكسر ذو <span style="color: var(--primary);">الرموز أو القيمة الأكبر</span> قبل وصول الأرنب لخط النهاية!
         </div>
     </div>
 
@@ -529,7 +528,7 @@
         let speed = 5200; // سرعة البداية بالملي ثانية
         let correctAnswer = '';
 
-        // نظام النغمات البرمجية الفوري والمستقل تماماً لعدم الاعتماد على روابط خارجية
+        // نظام نغمات برمجية فوري وسريع ومحلي 100% دون أي تأخير شبكي
         const playTone = (type) => {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -542,29 +541,29 @@
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
                     osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 0.3);
+                    osc.stop(audioCtx.currentTime + 0.25);
                 } else if (type === 'wrong') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(180, audioCtx.currentTime);
                     osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
-                    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+                    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 0.35);
+                    osc.stop(audioCtx.currentTime + 0.3);
                 } else if (type === 'over') {
                     osc.type = 'sawtooth';
                     osc.frequency.setValueAtTime(220, audioCtx.currentTime);
                     osc.frequency.setValueAtTime(147, audioCtx.currentTime + 0.2);
-                    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+                    gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
                     osc.start();
-                    osc.stop(audioCtx.currentTime + 0.6);
+                    osc.stop(audioCtx.currentTime + 0.5);
                 }
             } catch (err) {
-                // المتصفح يمنع تشغيل الصوت إلا بعد تفاعل المستخدم، سيتم تلافيه تلقائياً
+                // تلافي حظر المتصفحات للصوت قبل تفاعل المستخدم
             }
         };
 
@@ -598,7 +597,7 @@
             return `<svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="border-radius:6px; overflow:hidden;">${segments}</svg>`;
         }
 
-        // توليد سؤال جديد ذكي وبدون أي إمكانيات للتجمد
+        // توليد سؤال جديد ذكي وسريع جداً وموثوق
         function nextQuestion() {
             clearTimeout(timer);
             
@@ -647,7 +646,7 @@
             rabbit.style.right = '0%';
             rabbit.classList.add('hopping');
 
-            // تشغيل انزلاق الأرنب بسلاسة فائقة
+            // تشغيل انزلاق الأرنب بسلاسة فائقة فورية
             setTimeout(() => {
                 rabbit.style.transition = `right ${speed}ms linear`;
                 rabbit.style.right = 'calc(100% - 70px)';
@@ -709,7 +708,7 @@
             document.getElementById('lives-val').innerText = "❤️".repeat(lives) + "🖤".repeat(3 - lives);
         }
 
-        // شاشة نهاية اللعبة المخصصة وبديلة الـ Alert
+        // شاشة نهاية اللعبة المخصصة
         function showGameOver() {
             playTone('over');
             
