@@ -8,57 +8,65 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
         body { font-family: 'Cairo', sans-serif; background: #e0f2fe; }
-        .v-frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
-        .v-n { border-bottom: 2px solid currentColor; padding: 0 3px; }
-        .v-d { padding: 0 3px; }
+        
+        /* تصميم الكسر الصلب المضمون */
+        .frac-block {
+            display: inline-block;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 1;
+        }
+        .frac-n { display: block; border-bottom: 2px solid currentColor; padding: 0 4px; }
+        .frac-d { display: block; padding: 0 4px; }
+        
         .car-move { transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body class="p-2 flex flex-col items-center justify-center min-h-screen">
 
-    <div class="w-full max-w-xl bg-white rounded-3xl shadow-xl p-4 border-4 border-sky-200">
-        <h1 class="text-xl md:text-3xl text-center text-sky-700 mb-3 font-black">🏎️ سباق الكسور المرجعية</h1>
+    <div class="w-full max-w-sm bg-white rounded-3xl shadow-xl p-4 border-4 border-sky-200">
+        <h1 class="text-xl text-center text-sky-700 mb-3 font-black">🏎️ سباق الكسور المرجعية</h1>
         
         <!-- مسار السباق -->
         <div class="bg-sky-50 rounded-2xl p-2 mb-3 border-2 border-sky-100">
-            <div class="relative h-12 border-b-4 border-dashed border-sky-200 mb-1">
-                <div id="p-car" class="car-move absolute right-0 text-3xl">🏎️</div>
+            <div class="relative h-10 border-b-4 border-dashed border-sky-200 mb-1">
+                <div id="p-car" class="car-move absolute right-0 text-2xl">🏎️</div>
             </div>
-            <div class="relative h-12">
-                <div id="r-car" class="car-move absolute right-0 text-3xl">⚡</div>
+            <div class="relative h-10">
+                <div id="r-car" class="car-move absolute right-0 text-2xl">⚡</div>
             </div>
         </div>
 
         <!-- منطقة التعزيز -->
-        <div id="combo-msg" class="h-10 flex items-center justify-center text-lg font-bold text-orange-500 transition-all duration-300 opacity-0 transform scale-0">
+        <div id="combo-msg" class="h-8 flex items-center justify-center text-base font-bold text-orange-500 transition-all duration-300 opacity-0 transform scale-0">
         </div>
 
         <!-- الكسر المطلوب -->
         <div class="flex flex-col items-center justify-center my-2">
-            <div class="bg-sky-100 px-6 py-3 rounded-2xl border-4 border-sky-300 text-center shadow-inner">
-                <div id="num-val" class="text-4xl font-black text-sky-800">1</div>
-                <div class="w-12 h-1 bg-sky-800 rounded-full my-0.5 mx-auto"></div>
-                <div id="den-val" class="text-4xl font-black text-sky-800">8</div>
+            <div class="bg-sky-100 px-4 py-2 rounded-2xl border-4 border-sky-300 text-center shadow-inner">
+                <div id="num-val" class="text-3xl font-black text-sky-800">1</div>
+                <div class="w-10 h-1 bg-sky-800 rounded-full my-0.5 mx-auto"></div>
+                <div id="den-val" class="text-3xl font-black text-sky-800">8</div>
             </div>
         </div>
 
-        <!-- بوابات الاختيار -->
-        <div class="grid grid-cols-3 gap-2 mt-3">
-            <button class="bg-green-100 hover:bg-green-200 border-4 border-green-300 p-3 rounded-2xl text-2xl font-black text-green-700 transition-transform active:scale-95" onclick="submitAnswer(0)">
+        <!-- بوابات الاختيار (تم إجبار الاتجاه على ltr لضمان 0 يسار و 1 يمين) -->
+        <div dir="ltr" class="grid grid-cols-3 gap-2 mt-3">
+            <button class="bg-green-100 hover:bg-green-200 border-4 border-green-300 p-2 rounded-2xl text-xl font-black text-green-700 transition-transform active:scale-95" onclick="submitAnswer(0)">
                 0
             </button>
-            <button class="bg-amber-100 hover:bg-amber-200 border-4 border-amber-300 p-3 rounded-2xl text-2xl font-black text-amber-700 transition-transform active:scale-95" onclick="submitAnswer(0.5)">
-                <div class="v-frac">
-                    <span class="v-n">1</span>
-                    <span class="v-d">2</span>
+            <button class="bg-amber-100 hover:bg-amber-200 border-4 border-amber-300 p-2 rounded-2xl text-xl font-black text-amber-700 transition-transform active:scale-95" onclick="submitAnswer(0.5)">
+                <div class="frac-block">
+                    <span class="frac-n">1</span>
+                    <span class="frac-d">2</span>
                 </div>
             </button>
-            <button class="bg-red-100 hover:bg-red-200 border-4 border-red-300 p-3 rounded-2xl text-2xl font-black text-red-700 transition-transform active:scale-95" onclick="submitAnswer(1)">
+            <button class="bg-red-100 hover:bg-red-200 border-4 border-red-300 p-2 rounded-2xl text-xl font-black text-red-700 transition-transform active:scale-95" onclick="submitAnswer(1)">
                 1
             </button>
         </div>
         
-        <div class="text-center mt-3 text-base font-bold text-gray-500">النقاط: <span id="score" class="text-sky-600">0</span></div>
+        <div class="text-center mt-3 text-sm font-bold text-gray-500">النقاط: <span id="score" class="text-sky-600">0</span></div>
     </div>
 
     <script>
