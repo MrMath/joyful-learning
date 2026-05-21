@@ -7,55 +7,57 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #f0f9ff; }
+        body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); min-height: 100vh; }
         .shape-element { transition: all 0.3s ease; cursor: pointer; stroke: #0369a1; stroke-width: 2; }
         .shape-element:hover { opacity: 0.8; transform: scale(1.01); }
         .shaded { fill: #f59e0b !important; }
         .unshaded { fill: #ffffff !important; }
     </style>
 </head>
-<body class="min-h-screen p-4 flex flex-col items-center justify-center">
+<body class="p-4 flex flex-col items-center justify-center">
 
-    <!-- Container scaled to ~80% (max-w-lg) -->
-    <div class="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-5 border-4 border-sky-100">
+    <!-- الحاوية الأساسية تم تصغيرها لـ max-w-md لتعطي انطباع الـ 80% -->
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-5 border-4 border-sky-100">
         <h1 class="text-2xl font-black text-sky-800 text-center mb-4">🍕 مستكشف الكسور</h1>
 
         <!-- أدوات التحكم -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+        <div class="grid grid-cols-1 gap-3 mb-5">
             <div class="flex flex-col gap-1">
-                <label class="font-bold text-sm text-gray-600">اختر الشكل:</label>
-                <select id="shapeSelect" class="p-2 text-sm rounded-xl border-2 border-sky-200 bg-sky-50 font-bold text-sky-900 focus:outline-none focus:border-sky-500" onchange="updateView()">
+                <label class="font-bold text-xs text-gray-500">اختر الشكل:</label>
+                <select id="shapeSelect" class="p-2 rounded-xl border-2 border-sky-200 bg-sky-50 font-bold text-sky-900 focus:outline-none focus:border-sky-500" onchange="updateView()">
                     <option value="circle">بيتزا (دائرة)</option>
                     <option value="rectangle">شوكولاتة (مستطيل)</option>
                 </select>
             </div>
             <div class="flex flex-col gap-1">
-                <label class="font-bold text-sm text-gray-600">عدد التقسيمات: <span id="divCount" class="text-sky-600">4</span></label>
-                <input type="range" id="divSlider" min="2" max="12" value="4" class="w-full h-3 bg-sky-100 rounded-lg appearance-none cursor-pointer" oninput="updateView()">
+                <label class="font-bold text-xs text-gray-500">عدد التقسيمات: <span id="divCount" class="text-sky-600">4</span></label>
+                <input type="range" id="divSlider" min="2" max="12" value="4" class="w-full h-3 bg-sky-100 rounded-lg appearance-none cursor-pointer accent-sky-600" oninput="updateView()">
             </div>
         </div>
 
         <!-- مساحة الرسم -->
         <div id="canvas-container" class="flex flex-col justify-center items-center bg-sky-50 rounded-2xl border-2 border-dashed border-sky-200 p-4 mb-4">
-            <svg id="canvas" width="240" height="240" viewBox="0 0 400 400" class="mb-2"></svg>
+            <svg id="canvas" width="200" height="200" viewBox="0 0 400 400" class="mb-2"></svg>
             
-            <!-- منطقة عرض الكسر الرأسي - مخفية في البداية -->
-            <div id="fractionDisplay" class="hidden flex items-center gap-4 bg-white px-6 py-2 rounded-2xl border-4 border-sky-200 shadow-lg">
-                <div class="flex flex-col items-center text-sky-800 font-black text-3xl">
+            <!-- منطقة عرض الكسر الرأسي (تصغير الخط إلى text-2xl ليعبر عن 90% من الحجم السابق) -->
+            <div id="fractionDisplay" class="hidden flex items-center justify-center gap-3 bg-white px-6 py-2 rounded-2xl border-4 border-sky-200 shadow-lg text-2xl font-black text-sky-800">
+                <div class="flex flex-col items-center">
                     <span id="numerator">0</span>
-                    <div class="w-12 h-1 bg-sky-800 rounded-full my-1"></div>
+                    <div class="w-8 h-0.5 bg-sky-800"></div>
                     <span id="denominator">4</span>
                 </div>
-                <div id="equalsOne" class="hidden text-emerald-600 font-black text-3xl">= 1</div>
+                <div id="equalsOne" class="hidden text-emerald-600 text-2xl">= 1</div>
             </div>
         </div>
 
-        <!-- الملاحظات الذكية -->
-        <div id="note" class="p-3 bg-amber-50 rounded-xl border-2 border-amber-200 text-center font-bold text-sm text-amber-800">
+        <!-- الملاحظات -->
+        <div id="note" class="p-3 bg-amber-50 rounded-xl border-2 border-amber-200 text-center font-bold text-xs text-amber-800">
             اضغط على الأجزاء لتلوينها واكتشاف الكسور.
         </div>
 
-        <button onclick="reset()" class="w-full mt-3 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl transition-all">إعادة ضبط</button>
+        <button onclick="reset()" class="w-full mt-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition-all shadow-md">
+            إعادة ضبط
+        </button>
     </div>
 
     <script>
@@ -95,26 +97,30 @@
             
             svg.innerHTML = '';
             
-            // تحديث الكسر
-            numEl.innerText = shadedParts.length;
-            denEl.innerText = divisions;
-
-            // منطق الإخفاء والإظهار (يظهر فقط إذا تم اختيار جزء واحد على الأقل)
+            // تحديث عرض الكسر (إخفاء عند البداية)
             if (shadedParts.length === 0) {
                 fracDisp.classList.add('hidden');
             } else {
                 fracDisp.classList.remove('hidden');
-            }
-
-            // منطق = 1
-            if (shadedParts.length === divisions && divisions > 0) {
-                eqEl.classList.remove('hidden');
-                document.getElementById('note').innerText = "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
-            } else {
-                eqEl.classList.add('hidden');
-                document.getElementById('note').innerText = "اضغط على الأجزاء لتلوينها واكتشاف الكسور.";
+                numEl.innerText = shadedParts.length;
+                denEl.innerText = divisions;
+                
+                if (shadedParts.length === divisions) {
+                    eqEl.classList.remove('hidden');
+                    fracDisp.classList.replace('border-sky-200', 'border-emerald-200');
+                    fracDisp.classList.replace('text-sky-800', 'text-emerald-600');
+                } else {
+                    eqEl.classList.add('hidden');
+                    fracDisp.classList.replace('border-emerald-200', 'border-sky-200');
+                    fracDisp.classList.replace('text-emerald-600', 'text-sky-800');
+                }
             }
             
+            // تحديث الملاحظات
+            const note = document.getElementById('note');
+            if (shadedParts.length === divisions && divisions > 0) note.innerText = "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
+            else note.innerText = "اضغط على الأجزاء لتلوينها واكتشاف الكسور.";
+
             // رسم الشكل
             if (shape === 'circle') {
                 for (let i = 0; i < divisions; i++) {
