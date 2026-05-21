@@ -16,40 +16,46 @@
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center justify-center">
 
-    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 border-4 border-sky-100">
-        <h1 class="text-3xl font-black text-sky-800 text-center mb-6">🍕 مستكشف الكسور</h1>
+    <!-- Container scaled to ~80% relative to previous view -->
+    <div class="w-full max-w-xl bg-white rounded-3xl shadow-2xl p-5 border-4 border-sky-100">
+        <h1 class="text-2xl font-black text-sky-800 text-center mb-4">🍕 مستكشف الكسور</h1>
 
         <!-- أدوات التحكم -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="flex flex-col gap-2">
-                <label class="font-bold text-gray-600">اختر الشكل:</label>
-                <select id="shapeSelect" class="p-3 rounded-xl border-2 border-sky-200 bg-sky-50 font-bold text-sky-900 focus:outline-none focus:border-sky-500" onchange="updateView()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+            <div class="flex flex-col gap-1">
+                <label class="font-bold text-sm text-gray-600">اختر الشكل:</label>
+                <select id="shapeSelect" class="p-2 text-sm rounded-xl border-2 border-sky-200 bg-sky-50 font-bold text-sky-900 focus:outline-none focus:border-sky-500" onchange="updateView()">
                     <option value="circle">بيتزا (دائرة)</option>
                     <option value="rectangle">شوكولاتة (مستطيل)</option>
                 </select>
             </div>
-            <div class="flex flex-col gap-2">
-                <label class="font-bold text-gray-600">عدد التقسيمات: <span id="divCount" class="text-sky-600">4</span></label>
-                <input type="range" id="divSlider" min="2" max="12" value="4" class="w-full h-4 bg-sky-100 rounded-lg appearance-none cursor-pointer" oninput="updateView()">
+            <div class="flex flex-col gap-1">
+                <label class="font-bold text-sm text-gray-600">عدد التقسيمات: <span id="divCount" class="text-sky-600">4</span></label>
+                <input type="range" id="divSlider" min="2" max="12" value="4" class="w-full h-3 bg-sky-100 rounded-lg appearance-none cursor-pointer" oninput="updateView()">
             </div>
         </div>
 
         <!-- مساحة الرسم -->
         <div id="canvas-container" class="flex flex-col justify-center items-center bg-sky-50 rounded-2xl border-2 border-dashed border-sky-200 p-4 mb-4">
-            <svg id="canvas" width="300" height="300" viewBox="0 0 400 400" class="mb-4"></svg>
+            <svg id="canvas" width="240" height="240" viewBox="0 0 400 400" class="mb-2"></svg>
             
-            <!-- إضافة عرض الكسر -->
-            <div id="fractionDisplay" class="text-3xl font-black text-sky-800 bg-white px-6 py-2 rounded-full border-4 border-sky-200 shadow-lg">
-                0/4
+            <!-- منطقة عرض الكسر الرأسي - مخفية في البداية -->
+            <div id="fractionDisplay" class="hidden flex items-center gap-4 bg-white px-6 py-2 rounded-2xl border-4 border-sky-200 shadow-lg">
+                <div class="flex flex-col items-center text-sky-800 font-black text-3xl">
+                    <span id="numerator">0</span>
+                    <div class="w-12 h-1 bg-sky-800 rounded-full my-1"></div>
+                    <span id="denominator">4</span>
+                </div>
+                <div id="equalsOne" class="hidden text-emerald-600 font-black text-3xl">= 1</div>
             </div>
         </div>
 
         <!-- الملاحظات الذكية -->
-        <div id="note" class="p-4 bg-amber-50 rounded-xl border-2 border-amber-200 text-center font-bold text-amber-800">
-            الواحد الصحيح هو الشكل الكامل قبل أن نأخذ منه أي جزء.
+        <div id="note" class="p-3 bg-amber-50 rounded-xl border-2 border-amber-200 text-center font-bold text-sm text-amber-800">
+            اضغط على الأجزاء لتلوينها واكتشاف الكسور.
         </div>
 
-        <button onclick="reset()" class="w-full mt-4 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition-all">إعادة ضبط</button>
+        <button onclick="reset()" class="w-full mt-3 py-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-sm rounded-xl transition-all">إعادة ضبط</button>
     </div>
 
     <script>
@@ -83,26 +89,33 @@
         function render() {
             const svg = document.getElementById('canvas');
             const fracDisp = document.getElementById('fractionDisplay');
+            const numEl = document.getElementById('numerator');
+            const denEl = document.getElementById('denominator');
+            const eqEl = document.getElementById('equalsOne');
+            
             svg.innerHTML = '';
             
-            // 1. حساب وعرض الكسر
-            const numerator = shadedParts.length;
-            const denominator = divisions;
-            if (numerator === denominator && denominator > 0) {
-                fracDisp.innerText = `${numerator}/${denominator} = 1`;
-                fracDisp.className = "text-3xl font-black text-emerald-600 bg-emerald-50 px-6 py-2 rounded-full border-4 border-emerald-200 shadow-lg";
+            // تحديث الكسر
+            numEl.innerText = shadedParts.length;
+            denEl.innerText = divisions;
+
+            // منطق الإخفاء والإظهار
+            if (shadedParts.length === 0) {
+                fracDisp.classList.add('hidden');
             } else {
-                fracDisp.innerText = `${numerator}/${denominator}`;
-                fracDisp.className = "text-3xl font-black text-sky-800 bg-white px-6 py-2 rounded-full border-4 border-sky-200 shadow-lg";
+                fracDisp.classList.remove('hidden');
+            }
+
+            // منطق = 1
+            if (shadedParts.length === divisions && divisions > 0) {
+                eqEl.classList.remove('hidden');
+                document.getElementById('note').innerText = "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
+            } else {
+                eqEl.classList.add('hidden');
+                document.getElementById('note').innerText = "اضغط على الأجزاء لتلوينها واكتشاف الكسور.";
             }
             
-            // 2. تحديث الملاحظة
-            const note = document.getElementById('note');
-            if (divisions >= 8) note.innerText = "لاحظ كيف أصبحت الأجزاء صغيرة جداً!";
-            else if (numerator === denominator && denominator > 0) note.innerText = "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
-            else note.innerText = "اضغط على الأجزاء لتلوينها واكتشاف الكسور.";
-
-            // 3. رسم الشكل
+            // رسم الشكل
             if (shape === 'circle') {
                 for (let i = 0; i < divisions; i++) {
                     const angle = (2 * Math.PI) / divisions;
@@ -123,14 +136,14 @@
                     svg.appendChild(path);
                 }
             } else {
-                const rectWidth = 300;
-                const rectHeight = 150;
+                const rectWidth = 240;
+                const rectHeight = 120;
                 const segmentWidth = rectWidth / divisions;
                 
                 for (let i = 0; i < divisions; i++) {
                     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                    rect.setAttribute("x", 50 + (i * segmentWidth));
-                    rect.setAttribute("y", 125);
+                    rect.setAttribute("x", 80 + (i * segmentWidth));
+                    rect.setAttribute("y", 140);
                     rect.setAttribute("width", segmentWidth);
                     rect.setAttribute("height", rectHeight);
                     rect.setAttribute("class", `shape-element ${shadedParts.includes(i) ? 'shaded' : 'unshaded'}`);
