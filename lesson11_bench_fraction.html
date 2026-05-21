@@ -9,56 +9,56 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap');
         body { font-family: 'Cairo', sans-serif; background: #e0f2fe; }
         .v-frac { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.1; }
-        .v-n { border-bottom: 3px solid currentColor; padding: 0 4px; }
-        .v-d { padding: 0 4px; }
+        .v-n { border-bottom: 2px solid currentColor; padding: 0 3px; }
+        .v-d { padding: 0 3px; }
         .car-move { transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
-<body class="p-2 md:p-4 flex flex-col items-center justify-center min-h-screen">
+<body class="p-2 flex flex-col items-center justify-center min-h-screen">
 
-    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-4 md:p-8 border-4 border-sky-200">
-        <h1 class="text-2xl md:text-4xl text-center text-sky-700 mb-4 font-black">🏎️ سباق الكسور المرجعية</h1>
+    <div class="w-full max-w-xl bg-white rounded-3xl shadow-xl p-4 border-4 border-sky-200">
+        <h1 class="text-xl md:text-3xl text-center text-sky-700 mb-3 font-black">🏎️ سباق الكسور المرجعية</h1>
         
-        <!-- مسار السباق - تقليل المسافات هنا -->
-        <div class="bg-sky-50 rounded-2xl p-3 mb-4 border-2 border-sky-100">
-            <div class="relative h-16 border-b-4 border-dashed border-sky-200 mb-2">
-                <div id="p-car" class="car-move absolute right-0 text-4xl">🏎️</div>
+        <!-- مسار السباق -->
+        <div class="bg-sky-50 rounded-2xl p-2 mb-3 border-2 border-sky-100">
+            <div class="relative h-12 border-b-4 border-dashed border-sky-200 mb-1">
+                <div id="p-car" class="car-move absolute right-0 text-3xl">🏎️</div>
             </div>
-            <div class="relative h-16">
-                <div id="r-car" class="car-move absolute right-0 text-4xl">⚡</div>
+            <div class="relative h-12">
+                <div id="r-car" class="car-move absolute right-0 text-3xl">⚡</div>
             </div>
         </div>
 
         <!-- منطقة التعزيز -->
-        <div id="combo-msg" class="h-12 flex items-center justify-center text-xl font-bold text-orange-500 transition-all duration-300 opacity-0 transform scale-0">
+        <div id="combo-msg" class="h-10 flex items-center justify-center text-lg font-bold text-orange-500 transition-all duration-300 opacity-0 transform scale-0">
         </div>
 
         <!-- الكسر المطلوب -->
         <div class="flex flex-col items-center justify-center my-2">
-            <div class="bg-sky-100 px-8 py-4 rounded-3xl border-4 border-sky-300 text-center shadow-inner">
-                <div id="num-val" class="text-5xl font-black text-sky-800">1</div>
-                <div class="w-16 h-1.5 bg-sky-800 rounded-full my-1"></div>
-                <div id="den-val" class="text-5xl font-black text-sky-800">8</div>
+            <div class="bg-sky-100 px-6 py-3 rounded-2xl border-4 border-sky-300 text-center shadow-inner">
+                <div id="num-val" class="text-4xl font-black text-sky-800">1</div>
+                <div class="w-12 h-1 bg-sky-800 rounded-full my-0.5 mx-auto"></div>
+                <div id="den-val" class="text-4xl font-black text-sky-800">8</div>
             </div>
         </div>
 
         <!-- بوابات الاختيار -->
-        <div class="grid grid-cols-3 gap-3 mt-4">
-            <button class="bg-green-100 hover:bg-green-200 border-4 border-green-300 p-4 rounded-3xl text-3xl font-black text-green-700 transition-transform active:scale-95" onclick="submitAnswer(0)">
+        <div class="grid grid-cols-3 gap-2 mt-3">
+            <button class="bg-green-100 hover:bg-green-200 border-4 border-green-300 p-3 rounded-2xl text-2xl font-black text-green-700 transition-transform active:scale-95" onclick="submitAnswer(0)">
                 0
             </button>
-            <button class="bg-amber-100 hover:bg-amber-200 border-4 border-amber-300 p-4 rounded-3xl text-3xl font-black text-amber-700 transition-transform active:scale-95" onclick="submitAnswer(0.5)">
+            <button class="bg-amber-100 hover:bg-amber-200 border-4 border-amber-300 p-3 rounded-2xl text-2xl font-black text-amber-700 transition-transform active:scale-95" onclick="submitAnswer(0.5)">
                 <div class="v-frac">
                     <span class="v-n">1</span>
                     <span class="v-d">2</span>
                 </div>
             </button>
-            <button class="bg-red-100 hover:bg-red-200 border-4 border-red-300 p-4 rounded-3xl text-3xl font-black text-red-700 transition-transform active:scale-95" onclick="submitAnswer(1)">
+            <button class="bg-red-100 hover:bg-red-200 border-4 border-red-300 p-3 rounded-2xl text-2xl font-black text-red-700 transition-transform active:scale-95" onclick="submitAnswer(1)">
                 1
             </button>
         </div>
         
-        <div class="text-center mt-4 text-lg font-bold text-gray-500">النقاط: <span id="score" class="text-sky-600">0</span></div>
+        <div class="text-center mt-3 text-base font-bold text-gray-500">النقاط: <span id="score" class="text-sky-600">0</span></div>
     </div>
 
     <script>
@@ -66,19 +66,29 @@
         const pCar = document.getElementById('p-car');
         const rCar = document.getElementById('r-car');
 
-        function nextRound() {
-            const cats = [0, 0.5, 1];
-            currentAnswer = cats[Math.floor(Math.random()*3)];
-            
-            let n, d;
-            if(currentAnswer === 0) { d = Math.floor(Math.random()*5)+8; n = 1; }
-            else if(currentAnswer === 0.5) { d = Math.floor(Math.random()*5)+6; n = Math.floor(d/2); }
-            else { d = Math.floor(Math.random()*5)+8; n = d-1; }
+        function getCorrectBenchmark(n, d) {
+            const val = n / d;
+            // منطق التقريب التعليمي الرسمي
+            if (d === 3) return n === 1 ? 0.5 : 1;
+            if (d === 4) return n === 1 ? 0 : (n === 2 ? 0.5 : 1);
+            if (d === 5) return n <= 1 ? 0 : (n === 2 ? 0.5 : 1);
+            if (d === 6) return n <= 1 ? 0 : (n <= 3 ? 0.5 : 1);
+            if (d === 8) return n <= 2 ? 0 : (n <= 5 ? 0.5 : 1);
+            if (d === 10) return n <= 2 ? 0 : (n <= 6 ? 0.5 : 1);
+            return val < 0.25 ? 0 : (val <= 0.75 ? 0.5 : 1);
+        }
 
+        function nextRound() {
+            const denominators = [3, 4, 5, 6, 8, 10];
+            const d = denominators[Math.floor(Math.random() * denominators.length)];
+            const n = Math.floor(Math.random() * (d - 1)) + 1;
+            
+            currentAnswer = getCorrectBenchmark(n, d);
+            
             document.getElementById('num-val').innerText = n;
             document.getElementById('den-val').innerText = d;
             
-            pCar.style.right = '0%';
+            pCar.style.right = (streak * 20) + '%';
             rCar.style.right = '0%';
             setTimeout(() => rCar.style.right = '80%', 100); 
         }
@@ -89,12 +99,12 @@
                 score += 10;
                 streak++;
                 document.getElementById('score').innerText = score;
-                pCar.style.right = (parseInt(pCar.style.right) || 0) + 20 + '%';
+                pCar.style.right = (streak * 20) + '%';
                 
-                if(streak === 3) {
+                if(streak >= 4) {
                     triggerReward();
                 } else {
-                    setTimeout(nextRound, 600);
+                    nextRound();
                 }
             } else {
                 streak = 0;
@@ -111,7 +121,7 @@
             msg.classList.add('opacity-100', 'scale-110');
             msg.classList.remove('opacity-0', 'scale-0');
             
-            pCar.style.right = '90%'; 
+            pCar.style.right = '85%'; 
             
             setTimeout(() => {
                 msg.classList.add('opacity-0', 'scale-0');
