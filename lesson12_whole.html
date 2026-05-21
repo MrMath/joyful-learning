@@ -1,0 +1,212 @@
+import React, { useState, useEffect } from 'react';
+import { Circle, Square, RotateCcw, Lightbulb, Pizza, Layout } from 'lucide-react';
+
+const App = () => {
+  const [shape, setShape] = useState('circle'); // circle, rectangle, pizza, chocolate
+  const [divisions, setDivisions] = useState(4);
+  const [shadedParts, setShadedParts] = useState([]);
+
+  // إعادة ضبط الأجزاء الملونة عند تغيير عدد التقسيمات أو الشكل
+  useEffect(() => {
+    setShadedParts([]);
+  }, [divisions, shape]);
+
+  const togglePart = (index) => {
+    if (shadedParts.includes(index)) {
+      setShadedParts(shadedParts.filter(i => i !== index));
+    } else {
+      setShadedParts([...shadedParts, index]);
+    }
+  };
+
+  const reset = () => {
+    setShadedParts([]);
+    setDivisions(4);
+    setShape('circle');
+  };
+
+  const getSmartNote = () => {
+    if (divisions >= 8) return "لاحظ كيف أصبحت الأجزاء صغيرة جداً لأننا قسمنا الواحد الصحيح كثيراً!";
+    if (shadedParts.length === divisions && divisions > 0) return "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
+    return "الواحد الصحيح هو الشكل الكامل قبل أن نأخذ منه أي جزء.";
+  };
+
+  const renderShape = () => {
+    const size = 300;
+    const center = size / 2;
+    const radius = size / 2 - 15;
+
+    if (shape === 'circle' || shape === 'pizza') {
+      return (
+        <svg width={size} height={size} className="drop-shadow-2xl overflow-visible">
+          {/* خلفية الشكل الأساسية */}
+          <circle cx={center} cy={center} r={radius} fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2" />
+          
+          {/* الأجزاء الملونة */}
+          {Array.from({ length: divisions }).map((_, i) => {
+            const startAngle = (i * 360) / divisions;
+            const endAngle = ((i + 1) * 360) / divisions;
+            const x1 = center + radius * Math.cos((Math.PI * (startAngle - 90)) / 180);
+            const y1 = center + radius * Math.sin((Math.PI * (startAngle - 90)) / 180);
+            const x2 = center + radius * Math.cos((Math.PI * (endAngle - 90)) / 180);
+            const y2 = center + radius * Math.sin((Math.PI * (endAngle - 90)) / 180);
+            const largeArcFlag = 360 / divisions > 180 ? 1 : 0;
+            const d = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
+
+            return (
+              <path
+                key={i}
+                d={d}
+                fill={shadedParts.includes(i) ? (shape === 'pizza' ? '#f59e0b' : '#3b82f6') : (shape === 'pizza' ? '#fef3c7' : 'white')}
+                className="cursor-pointer hover:opacity-90 transition-colors duration-200"
+                onClick={() => togglePart(i)}
+              />
+            );
+          })}
+
+          {/* الفواصل (تُرسم فوق الأجزاء لضمان وضوحها) */}
+          {Array.from({ length: divisions }).map((_, i) => {
+            const angle = (i * 360) / divisions;
+            const x = center + radius * Math.cos((Math.PI * (angle - 90)) / 180);
+            const y = center + radius * Math.sin((Math.PI * (angle - 90)) / 180);
+            return (
+              <line
+                key={`line-${i}`}
+                x1={center}
+                y1={center}
+                x2={x}
+                y2={y}
+                stroke={shape === 'pizza' ? '#92400e' : '#1e40af'}
+                strokeWidth="4"
+                strokeLinecap="round"
+                pointerEvents="none"
+              />
+            );
+          })}
+          {/* الإطار الخارجي */}
+          <circle cx={center} cy={center} r={radius} fill="none" stroke={shape === 'pizza' ? '#92400e' : '#1e40af'} strokeWidth="5" pointerEvents="none" />
+        </svg>
+      );
+    }
+
+    if (shape === 'rectangle' || shape === 'chocolate') {
+      const rectWidth = 320;
+      const rectHeight = 160;
+
+      return (
+        <div className="relative shadow-2xl rounded-2xl overflow-hidden border-[5px]" 
+             style={{ width: rectWidth, height: rectHeight, borderColor: shape === 'chocolate' ? '#451a03' : '#1e40af' }}>
+          <div className="flex w-full h-full bg-white">
+            {Array.from({ length: divisions }).map((_, i) => (
+              <div
+                key={i}
+                onClick={() => togglePart(i)}
+                className={`flex-1 relative cursor-pointer transition-all duration-300 flex items-center justify-center
+                  ${shadedParts.includes(i) 
+                    ? (shape === 'chocolate' ? 'bg-amber-800' : 'bg-green-500') 
+                    : (shape === 'chocolate' ? 'bg-amber-100' : 'bg-white')}
+                  ${i !== divisions - 1 ? 'border-l-[4px]' : ''}`}
+                style={{ borderLeftColor: shape === 'chocolate' ? '#451a03' : '#1e40af' }}
+              >
+                {shape === 'chocolate' && (
+                   <div className="w-10 h-10 border-4 border-amber-900/20 rounded-lg shadow-inner"></div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-orange-50 font-sans p-4 md:p-8 flex flex-col items-center text-right" dir="rtl">
+      <header className="mb-8 text-center">
+        <h1 className="text-4xl md:text-5xl font-black text-orange-600 mb-2 drop-shadow-sm flex items-center justify-center gap-3">
+          <span className="bg-orange-500 text-white px-5 py-1 rounded-full text-3xl">1</span>
+          اكتشف الواحد الصحيح
+        </h1>
+        <p className="text-xl text-gray-600 font-bold">كل شكل كامل يساوي واحداً صحيحاً</p>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl items-start">
+        {/* التحكم */}
+        <div className="bg-white p-6 rounded-3xl shadow-xl border-4 border-orange-200 flex flex-col gap-6 order-2 lg:order-1">
+          <div>
+            <h3 className="text-xl font-bold text-gray-700 mb-4 flex items-center gap-2">
+              <Layout className="text-orange-500" /> اختر شكل الواحد الصحيح:
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { id: 'circle', label: 'دائرة', icon: <Circle size={20}/> },
+                { id: 'rectangle', label: 'مستطيل', icon: <Square size={20}/> },
+                { id: 'pizza', label: 'بيتزا', icon: <Pizza size={20}/> },
+                { id: 'chocolate', label: 'شوكولاتة', icon: <span className="text-xl">🍫</span> },
+              ].map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setShape(item.id)}
+                  className={`flex items-center justify-center gap-2 p-4 rounded-2xl font-black transition-all ${shape === item.id ? 'bg-orange-500 text-white scale-105 shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                >
+                  {item.icon}
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold text-gray-700 mb-4">قسم الواحد الصحيح إلى:</h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[2, 3, 4, 6, 8].map((num) => (
+                <button
+                  key={num}
+                  onClick={() => setDivisions(num)}
+                  className={`w-14 h-14 rounded-full font-black text-2xl transition-all ${divisions === num ? 'bg-blue-600 text-white scale-110 shadow-xl border-4 border-blue-300' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button 
+            onClick={reset}
+            className="mt-4 flex items-center justify-center gap-2 px-6 py-4 bg-red-50 text-red-600 rounded-2xl font-black hover:bg-red-100 transition-colors border-2 border-red-200"
+          >
+            <RotateCcw size={22} /> أعد التجربة
+          </button>
+        </div>
+
+        {/* مساحة العرض */}
+        <div className="lg:col-span-2 flex flex-col items-center order-1 lg:order-2">
+          <div className="bg-white w-full p-10 rounded-[3rem] shadow-2xl border-b-[12px] border-orange-100 flex flex-col items-center justify-center min-h-[500px] relative">
+            <div className="z-10 mb-10 transform transition-all duration-500 hover:scale-105">
+              {renderShape()}
+            </div>
+
+            {/* الكسر */}
+            <div className="z-10 bg-blue-50 px-10 py-5 rounded-[2rem] border-4 border-blue-200 flex flex-col items-center shadow-inner">
+              <span className="text-6xl font-black text-blue-600">{shadedParts.length}</span>
+              <div className="w-24 h-3 bg-blue-800 my-2 rounded-full"></div>
+              <span className="text-6xl font-black text-gray-800">{divisions}</span>
+            </div>
+          </div>
+
+          {/* ملاحظة تعلم */}
+          <div className="mt-8 bg-blue-600 text-white p-8 rounded-[2rem] shadow-xl w-full flex items-center gap-6 border-b-8 border-blue-800">
+            <div className="bg-yellow-400 p-4 rounded-2xl text-blue-900 shadow-lg shrink-0">
+              <Lightbulb size={40} />
+            </div>
+            <div>
+                <h4 className="font-black text-2xl mb-1">تلميح الأذكياء:</h4>
+                <p className="text-blue-50 text-xl font-bold leading-relaxed">{getSmartNote()}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default App;
