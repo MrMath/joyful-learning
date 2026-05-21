@@ -27,42 +27,42 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            padding: 8px; /* تكبير بسيط للحشو الخارجي ليتناسب مع الحجم الجديد */
+            padding: 10px; /* ملاءمة الحواف الخارجية للحجم الجديد */
             overflow: hidden; /* منع التمرير في الصفحة */
         }
         
-        /* بطاقة ذكية مكبرة بنسبة 10% بالتناسب */
+        /* تكبير حجم البطاقة بنسبة 10% إضافية (من 385px إلى 424px) */
         .main-card { 
             background: var(--card); 
-            border-radius: 1.3rem; 
-            padding: 14px 17px; /* زيادة حشو البطاقة بنسبة 10% */
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            border-radius: 1.45rem; 
+            padding: 16px 19px; /* زيادة حشو البطاقة */
+            box-shadow: 0 12px 24px rgba(0,0,0,0.06); 
             width: 100%; 
-            max-width: 385px; /* تكبير العرض الأقصى من 350px إلى 385px (زيادة 10%) */
+            max-width: 424px; 
             text-align: center; 
-            border: 3px solid #fff; 
+            border: 3.5px solid #fff; 
         }
 
-        /* تكبير حجم عرض الكسر الأساسي */
+        /* تكبير حجم عرض الكسر الأساسي بنسبة 10% إضافية (من 2.0rem إلى 2.2rem) */
         .main-frac { 
             display: inline-flex; 
             flex-direction: column; 
             align-items: center; 
-            margin-bottom: 6px; 
+            margin-bottom: 8px; 
             font-weight: 900; 
-            font-size: 2.0rem; /* تكبير حجم الخط من 1.8rem إلى 2.0rem */
+            font-size: 2.2rem; 
             color: var(--primary); 
             line-height: 1; 
         }
         .main-frac .bar { 
-            width: 31px; /* زيادة العرض من 28px إلى 31px */
-            height: 3.5px; /* زيادة السمك */
+            width: 34px; /* زيادة العرض */
+            height: 4px; /* زيادة السمك */
             background: var(--primary); 
-            margin: 4px 0; 
-            border-radius: 2px; 
+            margin: 5px 0; 
+            border-radius: 2.5px; 
         }
 
-        /* تنسيق كسر النصف الرأسي المضمون */
+        /* تنسيق كسر النصف الرأسي المضمون مع زيادة الحجم */
         .frac-solid {
             display: inline-block;
             text-align: center;
@@ -78,8 +78,8 @@
         .frac-solid .bar {
             display: block;
             width: 100%;
-            height: 2.2px; /* زيادة سمك خط الكسر الداخلي */
-            margin: 1.5px 0;
+            height: 2.5px; /* زيادة سمك خط الكسر الداخلي */
+            margin: 2px 0;
             border-radius: 1px;
         }
         .frac-solid .den {
@@ -87,36 +87,36 @@
             width: 100%;
         }
 
-        /* كسر النصف الصغير للبطاقة أسفل الخط */
-        .frac-label { font-size: 0.88rem; color: #000000; width: 11px; }
-        .frac-label .bar { background-color: #000000; height: 1.4px; }
+        /* كسر النصف الصغير للبطاقة أسفل الخط بعد التكبير */
+        .frac-label { font-size: 0.97rem; color: #000000; width: 12px; }
+        .frac-label .bar { background-color: #000000; height: 1.6px; }
 
-        /* كسر النصف الصغير للأزرار التفاعلية */
-        .frac-btn { font-size: 1.2rem; color: #ffffff !important; width: 18px; }
-        .frac-btn .bar { background-color: #ffffff !important; height: 2.2px; }
+        /* كسر النصف الصغير للأزرار التفاعلية بعد التكبير */
+        .frac-btn { font-size: 1.3rem; color: #ffffff !important; width: 20px; }
+        .frac-btn .bar { background-color: #ffffff !important; height: 2.5px; }
 
-        /* تعديل خط الأعداد ليتناسب مع التكبير */
-        .track-wrapper { margin: 17px 0; position: relative; direction: ltr; }
-        .track { height: 9px; background: #cbd5e1; border-radius: 4.5px; width: 100%; cursor: pointer; }
+        /* تعديل خط الأعداد ليتناسب مع الحجم الجديد */
+        .track-wrapper { margin: 20px 0; position: relative; direction: ltr; }
+        .track { height: 10px; background: #cbd5e1; border-radius: 5px; width: 100%; cursor: pointer; }
         
-        /* تكبير المؤشرات الدائرية والهدف بنسبة 10% */
+        /* تكبير المؤشرات الدائرية والهدف بنسبة 10% إضافية */
         .marker { 
             position: absolute; 
-            top: -6.5px; 
-            width: 22px; /* تكبير القطر من 20px إلى 22px */
-            height: 22px; 
+            top: -7px; 
+            width: 24px; /* تكبير القطر */
+            height: 24px; 
             background: var(--accent); 
             border-radius: 50%; 
             transform: translateX(-50%); 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+            box-shadow: 0 3px 5px rgba(0,0,0,0.15); 
             pointer-events: none; 
         }
         
         .exact-marker { 
             position: absolute; 
-            top: -11px; 
-            width: 2.2px; 
-            height: 31px; /* زيادة الارتفاع من 28px إلى 31px */
+            top: -12px; 
+            width: 2.5px; 
+            height: 34px; /* زيادة الارتفاع */
             background: var(--success); 
             transform: translateX(-50%); 
             border-radius: 1px; 
@@ -126,49 +126,49 @@
         .exact-marker::after { 
             content: "📍"; 
             position: absolute; 
-            top: -13px; 
+            top: -15px; 
             left: 50%; 
             transform: translateX(-50%); 
-            font-size: 0.95rem; /* تكبير حجم الإيموجي */
+            font-size: 1.05rem; /* تكبير حجم الإيموجي */
         }
 
         /* تكبير ملصقات العناوين أسفل الخط */
         .labels { 
             display: flex; 
             justify-content: space-between; 
-            margin-top: 7px; 
+            margin-top: 8px; 
             font-weight: 900; 
-            font-size: 1.05rem; /* تكبير حجم الخط من 0.95rem إلى 1.05rem */
+            font-size: 1.15rem; /* تكبير حجم الخط */
             color: #000000; 
             align-items: center; 
         }
 
         /* تكبير الأزرار لتلائم الحجم الجديد وتسهل الضغط */
-        .bench-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 11px; }
+        .bench-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 13px; }
         button { 
-            padding: 9px; 
+            padding: 10px; 
             border: none; 
-            border-radius: 0.7rem; 
+            border-radius: 0.8rem; 
             background: var(--primary); 
             color: #ffffff; 
             font-weight: 900; 
-            font-size: 1.2rem; /* تكبير حجم خط زر الخيارات من 1.1rem إلى 1.2rem */
+            font-size: 1.3rem; /* تكبير خط أزرار الخيارات */
             cursor: pointer; 
             transition: 0.2s; 
-            min-height: 48px; /* زيادة الارتفاع الأدنى من 44px إلى 48px */
+            min-height: 53px; /* زيادة الارتفاع الأدنى */
             display: flex; 
             justify-content: center; 
             align-items: center; 
             opacity: 1 !important; 
         }
         button:hover { background: #0369a1; transform: scale(1.02); }
-        #next-btn { margin-top: 11px; width: 100%; background: var(--success); padding: 11px; min-height: 48px; }
+        #next-btn { margin-top: 13px; width: 100%; background: var(--success); padding: 12px; min-height: 53px; }
 
-        /* تكبير نصوص الإرشادات قليلاً */
-        h2 { font-size: 1.25rem; margin: 0 0 6px 0; }
-        p { font-size: 0.95rem !important; margin: 5px 0 !important; }
+        /* تكبير نصوص الإرشادات */
+        h2 { font-size: 1.38rem; margin: 0 0 7px 0; }
+        p { font-size: 1.05rem !important; margin: 6px 0 !important; }
 
-        #feedback { font-size: 1.05rem; font-weight: bold; margin-top: 11px; min-height: 26px; }
+        #feedback { font-size: 1.15rem; font-weight: bold; margin-top: 13px; min-height: 30px; }
     </style>
 </head>
 <body>
@@ -271,58 +271,83 @@
             const feedback = document.getElementById('feedback');
 
             if (diff <= tolerance) {
-                isPositionAccepted = true;
-                feedback.innerText = "رائع! تقدير مقارب جداً لموقع الكسر 🎯";
-                feedback.style.color = "var(--success)";
-                
-                // Show exact position helper pin
-                exactMarker.style.left = actualPercentage + '%';
-                exactMarker.style.display = 'block';
-                
-                // Reveal benchmark choices
-                document.getElementById('benchmark-step').style.display = 'block';
-            } else {
-                isPositionAccepted = false;
-                feedback.innerText = "الموضع غير دقيق، اضغط على مكان أقرب للكسر 🔍";
-                feedback.style.color = "var(--accent)";
-                document.getElementById('benchmark-step').style.display = 'none';
-                exactMarker.style.display = 'none';
-            }
+            isPositionAccepted = true;
+            feedback.innerText = "رائع! تقدير متميز ومقارب جداً لموقع الكسر 🎯";
+            feedback.style.color = "var(--success)";
+            
+            // Show exact position helper pin
+            exactMarker.style.left = actualPercentage + '%';
+            exactMarker.style.display = 'block';
+            
+            // Reveal benchmark choices
+            document.getElementById('benchmark-step').style.display = 'block';
+        } else {
+            isPositionAccepted = false;
+            feedback.innerText = "الموضع غير دقيق تماماً، حاول الضغط على مكان أقرب للكسر 🔍";
+            feedback.style.color = "var(--accent)";
+            document.getElementById('benchmark-step').style.display = 'none';
+            exactMarker.style.display = 'none';
         }
+    }
 
-        /* Verify chosen benchmark fraction using absolute distance calculation */
-        function checkBenchmark(val) {
-            if (!isPositionAccepted) return;
-
-            const actualVal = currentN / currentD;
-            
-            // Calculate absolute mathematical distances to each benchmark
-            const distTo0 = Math.abs(actualVal - 0);
-            const distToHalf = Math.abs(actualVal - 0.5);
-            const distTo1 = Math.abs(actualVal - 1);
-            
-            // Find the true minimum distance (the closest benchmark)
-            const minDist = Math.min(distTo0, distToHalf, distTo1);
-            
-            // Accept the choice if it matches the minimum distance (allowing tiny float precision margin)
-            let correct = false;
-            if (val === 0 && Math.abs(distTo0 - minDist) < 0.0001) correct = true;
-            else if (val === 0.5 && Math.abs(distToHalf - minDist) < 0.0001) correct = true;
-            else if (val === 1 && Math.abs(distTo1 - minDist) < 0.0001) correct = true;
-
-            const feedback = document.getElementById('feedback');
-            if (correct) {
-                feedback.innerHTML = "أحسنت! الإجابة والتقدير صحيحة 🌟👏";
-                feedback.style.color = "var(--success)";
-                document.getElementById('next-btn').style.display = 'block';
-            } else {
-                feedback.innerText = "التقدير للموقع رائع، فكر في الكسر المرجعي الأقرب 🤔";
-                feedback.style.color = "var(--accent)";
-            }
+    /* Get the official curriculum benchmark standard based on school textbooks */
+    function getCorrectBenchmark(n, d) {
+        if (d === 3) {
+            if (n === 1) return 0.5;  // 1/3 rounds to 1/2
+            if (n === 2) return 1;    // 2/3 rounds to 1 (Curriculum Standard)
         }
+        if (d === 4) {
+            if (n === 1) return 0;    // 1/4 rounds to 0
+            if (n === 2) return 0.5;  // 2/4 rounds to 1/2
+            if (n === 3) return 1;    // 3/4 rounds to 1
+        }
+        if (d === 5) {
+            if (n === 1) return 0;
+            if (n === 2) return 0.5;  // 2/5 rounds to 1/2
+            return 1;                 // 3/5 and 4/5 round to 1 (Curriculum Standard)
+        }
+        if (d === 6) {
+            if (n === 1) return 0;
+            if (n === 2 || n === 3) return 0.5; // 2/6 (1/3) -> 1/2, 3/6 -> 1/2
+            if (n >= 4) return 1;     // 4/6 (2/3) -> 1, 5/6 -> 1
+        }
+        if (d === 8) {
+            if (n <= 2) return 0;     // 1/8, 2/8 (1/4) round to 0
+            if (n <= 5) return 0.5;   // 3/8, 4/8, 5/8 round to 1/2
+            return 1;                 // 6/8, 7/8 round to 1
+        }
+        if (d === 10) {
+            if (n <= 2) return 0;     // 1/10, 2/10 round to 0
+            if (n <= 6) return 0.5;   // 3/10 to 6/10 round to 1/2
+            return 1;                 // 7/10, 8/10, 9/10 round to 1
+        }
+        // Fallback mathematical logic if any other denominator occurs
+        const val = n / d;
+        if (val < 0.25) return 0;
+        if (val <= 0.75) return 0.5;
+        return 1;
+    }
 
-        // Initialize first problem on load
-        newProblem();
-    </script>
+    /* Verify chosen benchmark fraction using absolute distance calculation */
+    function checkBenchmark(val) {
+        if (!isPositionAccepted) return;
+
+        const correctBenchmark = getCorrectBenchmark(currentN, currentD);
+        const correct = (val === correctBenchmark);
+
+        const feedback = document.getElementById('feedback');
+        if (correct) {
+            feedback.innerHTML = "أحسنت! الإجابة والتقدير صحيحة وممتازة 🌟👏";
+            feedback.style.color = "var(--success)";
+            document.getElementById('next-btn').style.display = 'block';
+        } else {
+            feedback.innerText = "التقدير للموقع رائع، ولكن فكر مجدداً في الكسر المرجعي الأقرب 🤔";
+            feedback.style.color = "var(--accent)";
+        }
+    }
+
+    // Initialize first problem on load
+    newProblem();
+</script>
 </body>
 </html>
