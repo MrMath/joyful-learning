@@ -1,212 +1,146 @@
-import React, { useState, useEffect } from 'react';
-import { Circle, Square, RotateCcw, Lightbulb, Pizza, Layout } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مستكشف الكسور التفاعلي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background-color: #f0f9ff; }
+        .shape-element { transition: all 0.3s ease; cursor: pointer; stroke: #0369a1; stroke-width: 2; }
+        .shape-element:hover { opacity: 0.8; transform: scale(1.01); }
+        .shaded { fill: #f59e0b !important; }
+        .unshaded { fill: #ffffff !important; }
+    </style>
+</head>
+<body class="min-h-screen p-4 flex flex-col items-center justify-center">
 
-const App = () => {
-  const [shape, setShape] = useState('circle'); // circle, rectangle, pizza, chocolate
-  const [divisions, setDivisions] = useState(4);
-  const [shadedParts, setShadedParts] = useState([]);
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 border-4 border-sky-100">
+        <h1 class="text-3xl font-black text-sky-800 text-center mb-6">🍕 مستكشف الكسور</h1>
 
-  // إعادة ضبط الأجزاء الملونة عند تغيير عدد التقسيمات أو الشكل
-  useEffect(() => {
-    setShadedParts([]);
-  }, [divisions, shape]);
-
-  const togglePart = (index) => {
-    if (shadedParts.includes(index)) {
-      setShadedParts(shadedParts.filter(i => i !== index));
-    } else {
-      setShadedParts([...shadedParts, index]);
-    }
-  };
-
-  const reset = () => {
-    setShadedParts([]);
-    setDivisions(4);
-    setShape('circle');
-  };
-
-  const getSmartNote = () => {
-    if (divisions >= 8) return "لاحظ كيف أصبحت الأجزاء صغيرة جداً لأننا قسمنا الواحد الصحيح كثيراً!";
-    if (shadedParts.length === divisions && divisions > 0) return "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
-    return "الواحد الصحيح هو الشكل الكامل قبل أن نأخذ منه أي جزء.";
-  };
-
-  const renderShape = () => {
-    const size = 300;
-    const center = size / 2;
-    const radius = size / 2 - 15;
-
-    if (shape === 'circle' || shape === 'pizza') {
-      return (
-        <svg width={size} height={size} className="drop-shadow-2xl overflow-visible">
-          {/* خلفية الشكل الأساسية */}
-          <circle cx={center} cy={center} r={radius} fill="#f3f4f6" stroke="#d1d5db" strokeWidth="2" />
-          
-          {/* الأجزاء الملونة */}
-          {Array.from({ length: divisions }).map((_, i) => {
-            const startAngle = (i * 360) / divisions;
-            const endAngle = ((i + 1) * 360) / divisions;
-            const x1 = center + radius * Math.cos((Math.PI * (startAngle - 90)) / 180);
-            const y1 = center + radius * Math.sin((Math.PI * (startAngle - 90)) / 180);
-            const x2 = center + radius * Math.cos((Math.PI * (endAngle - 90)) / 180);
-            const y2 = center + radius * Math.sin((Math.PI * (endAngle - 90)) / 180);
-            const largeArcFlag = 360 / divisions > 180 ? 1 : 0;
-            const d = `M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`;
-
-            return (
-              <path
-                key={i}
-                d={d}
-                fill={shadedParts.includes(i) ? (shape === 'pizza' ? '#f59e0b' : '#3b82f6') : (shape === 'pizza' ? '#fef3c7' : 'white')}
-                className="cursor-pointer hover:opacity-90 transition-colors duration-200"
-                onClick={() => togglePart(i)}
-              />
-            );
-          })}
-
-          {/* الفواصل (تُرسم فوق الأجزاء لضمان وضوحها) */}
-          {Array.from({ length: divisions }).map((_, i) => {
-            const angle = (i * 360) / divisions;
-            const x = center + radius * Math.cos((Math.PI * (angle - 90)) / 180);
-            const y = center + radius * Math.sin((Math.PI * (angle - 90)) / 180);
-            return (
-              <line
-                key={`line-${i}`}
-                x1={center}
-                y1={center}
-                x2={x}
-                y2={y}
-                stroke={shape === 'pizza' ? '#92400e' : '#1e40af'}
-                strokeWidth="4"
-                strokeLinecap="round"
-                pointerEvents="none"
-              />
-            );
-          })}
-          {/* الإطار الخارجي */}
-          <circle cx={center} cy={center} r={radius} fill="none" stroke={shape === 'pizza' ? '#92400e' : '#1e40af'} strokeWidth="5" pointerEvents="none" />
-        </svg>
-      );
-    }
-
-    if (shape === 'rectangle' || shape === 'chocolate') {
-      const rectWidth = 320;
-      const rectHeight = 160;
-
-      return (
-        <div className="relative shadow-2xl rounded-2xl overflow-hidden border-[5px]" 
-             style={{ width: rectWidth, height: rectHeight, borderColor: shape === 'chocolate' ? '#451a03' : '#1e40af' }}>
-          <div className="flex w-full h-full bg-white">
-            {Array.from({ length: divisions }).map((_, i) => (
-              <div
-                key={i}
-                onClick={() => togglePart(i)}
-                className={`flex-1 relative cursor-pointer transition-all duration-300 flex items-center justify-center
-                  ${shadedParts.includes(i) 
-                    ? (shape === 'chocolate' ? 'bg-amber-800' : 'bg-green-500') 
-                    : (shape === 'chocolate' ? 'bg-amber-100' : 'bg-white')}
-                  ${i !== divisions - 1 ? 'border-l-[4px]' : ''}`}
-                style={{ borderLeftColor: shape === 'chocolate' ? '#451a03' : '#1e40af' }}
-              >
-                {shape === 'chocolate' && (
-                   <div className="w-10 h-10 border-4 border-amber-900/20 rounded-lg shadow-inner"></div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-orange-50 font-sans p-4 md:p-8 flex flex-col items-center text-right" dir="rtl">
-      <header className="mb-8 text-center">
-        <h1 className="text-4xl md:text-5xl font-black text-orange-600 mb-2 drop-shadow-sm flex items-center justify-center gap-3">
-          <span className="bg-orange-500 text-white px-5 py-1 rounded-full text-3xl">1</span>
-          اكتشف الواحد الصحيح
-        </h1>
-        <p className="text-xl text-gray-600 font-bold">كل شكل كامل يساوي واحداً صحيحاً</p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-6xl items-start">
-        {/* التحكم */}
-        <div className="bg-white p-6 rounded-3xl shadow-xl border-4 border-orange-200 flex flex-col gap-6 order-2 lg:order-1">
-          <div>
-            <h3 className="text-xl font-bold text-gray-700 mb-4 flex items-center gap-2">
-              <Layout className="text-orange-500" /> اختر شكل الواحد الصحيح:
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { id: 'circle', label: 'دائرة', icon: <Circle size={20}/> },
-                { id: 'rectangle', label: 'مستطيل', icon: <Square size={20}/> },
-                { id: 'pizza', label: 'بيتزا', icon: <Pizza size={20}/> },
-                { id: 'chocolate', label: 'شوكولاتة', icon: <span className="text-xl">🍫</span> },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => setShape(item.id)}
-                  className={`flex items-center justify-center gap-2 p-4 rounded-2xl font-black transition-all ${shape === item.id ? 'bg-orange-500 text-white scale-105 shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                >
-                  {item.icon}
-                  {item.label}
-                </button>
-              ))}
+        <!-- أدوات التحكم -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600">اختر الشكل:</label>
+                <select id="shapeSelect" class="p-3 rounded-xl border-2 border-sky-200 bg-sky-50 font-bold text-sky-900 focus:outline-none focus:border-sky-500" onchange="updateView()">
+                    <option value="circle">بيتزا (دائرة)</option>
+                    <option value="rectangle">شوكولاتة (مستطيل)</option>
+                </select>
             </div>
-          </div>
-
-          <div>
-            <h3 className="text-xl font-bold text-gray-700 mb-4">قسم الواحد الصحيح إلى:</h3>
-            <div className="flex flex-wrap justify-center gap-3">
-              {[2, 3, 4, 6, 8].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setDivisions(num)}
-                  className={`w-14 h-14 rounded-full font-black text-2xl transition-all ${divisions === num ? 'bg-blue-600 text-white scale-110 shadow-xl border-4 border-blue-300' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}
-                >
-                  {num}
-                </button>
-              ))}
+            <div class="flex flex-col gap-2">
+                <label class="font-bold text-gray-600">عدد التقسيمات: <span id="divCount" class="text-sky-600">4</span></label>
+                <input type="range" id="divSlider" min="2" max="12" value="4" class="w-full h-4 bg-sky-100 rounded-lg appearance-none cursor-pointer" oninput="updateView()">
             </div>
-          </div>
-
-          <button 
-            onClick={reset}
-            className="mt-4 flex items-center justify-center gap-2 px-6 py-4 bg-red-50 text-red-600 rounded-2xl font-black hover:bg-red-100 transition-colors border-2 border-red-200"
-          >
-            <RotateCcw size={22} /> أعد التجربة
-          </button>
         </div>
 
-        {/* مساحة العرض */}
-        <div className="lg:col-span-2 flex flex-col items-center order-1 lg:order-2">
-          <div className="bg-white w-full p-10 rounded-[3rem] shadow-2xl border-b-[12px] border-orange-100 flex flex-col items-center justify-center min-h-[500px] relative">
-            <div className="z-10 mb-10 transform transition-all duration-500 hover:scale-105">
-              {renderShape()}
+        <!-- مساحة الرسم -->
+        <div id="canvas-container" class="flex flex-col justify-center items-center bg-sky-50 rounded-2xl border-2 border-dashed border-sky-200 p-4 mb-4">
+            <svg id="canvas" width="300" height="300" viewBox="0 0 400 400" class="mb-4"></svg>
+            
+            <!-- إضافة عرض الكسر -->
+            <div id="fractionDisplay" class="text-3xl font-black text-sky-800 bg-white px-6 py-2 rounded-full border-4 border-sky-200 shadow-lg">
+                0/4
             </div>
-
-            {/* الكسر */}
-            <div className="z-10 bg-blue-50 px-10 py-5 rounded-[2rem] border-4 border-blue-200 flex flex-col items-center shadow-inner">
-              <span className="text-6xl font-black text-blue-600">{shadedParts.length}</span>
-              <div className="w-24 h-3 bg-blue-800 my-2 rounded-full"></div>
-              <span className="text-6xl font-black text-gray-800">{divisions}</span>
-            </div>
-          </div>
-
-          {/* ملاحظة تعلم */}
-          <div className="mt-8 bg-blue-600 text-white p-8 rounded-[2rem] shadow-xl w-full flex items-center gap-6 border-b-8 border-blue-800">
-            <div className="bg-yellow-400 p-4 rounded-2xl text-blue-900 shadow-lg shrink-0">
-              <Lightbulb size={40} />
-            </div>
-            <div>
-                <h4 className="font-black text-2xl mb-1">تلميح الأذكياء:</h4>
-                <p className="text-blue-50 text-xl font-bold leading-relaxed">{getSmartNote()}</p>
-            </div>
-          </div>
         </div>
-      </div>
+
+        <!-- الملاحظات الذكية -->
+        <div id="note" class="p-4 bg-amber-50 rounded-xl border-2 border-amber-200 text-center font-bold text-amber-800">
+            الواحد الصحيح هو الشكل الكامل قبل أن نأخذ منه أي جزء.
+        </div>
+
+        <button onclick="reset()" class="w-full mt-4 py-3 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl transition-all">إعادة ضبط</button>
     </div>
-  );
-};
 
-export default App;
+    <script>
+        let divisions = 4;
+        let shape = 'circle';
+        let shadedParts = [];
+
+        function updateView() {
+            divisions = parseInt(document.getElementById('divSlider').value);
+            shape = document.getElementById('shapeSelect').value;
+            document.getElementById('divCount').innerText = divisions;
+            shadedParts = []; 
+            render();
+        }
+
+        function togglePart(index) {
+            if (shadedParts.includes(index)) {
+                shadedParts = shadedParts.filter(i => i !== index);
+            } else {
+                shadedParts.push(index);
+            }
+            render();
+        }
+
+        function reset() {
+            document.getElementById('divSlider').value = 4;
+            document.getElementById('shapeSelect').value = 'circle';
+            updateView();
+        }
+
+        function render() {
+            const svg = document.getElementById('canvas');
+            const fracDisp = document.getElementById('fractionDisplay');
+            svg.innerHTML = '';
+            
+            // 1. حساب وعرض الكسر
+            const numerator = shadedParts.length;
+            const denominator = divisions;
+            if (numerator === denominator && denominator > 0) {
+                fracDisp.innerText = `${numerator}/${denominator} = 1`;
+                fracDisp.className = "text-3xl font-black text-emerald-600 bg-emerald-50 px-6 py-2 rounded-full border-4 border-emerald-200 shadow-lg";
+            } else {
+                fracDisp.innerText = `${numerator}/${denominator}`;
+                fracDisp.className = "text-3xl font-black text-sky-800 bg-white px-6 py-2 rounded-full border-4 border-sky-200 shadow-lg";
+            }
+            
+            // 2. تحديث الملاحظة
+            const note = document.getElementById('note');
+            if (divisions >= 8) note.innerText = "لاحظ كيف أصبحت الأجزاء صغيرة جداً!";
+            else if (numerator === denominator && denominator > 0) note.innerText = "رائع! لقد لونت كل الأجزاء.. هذا يساوي 1 صحيح كامل!";
+            else note.innerText = "اضغط على الأجزاء لتلوينها واكتشاف الكسور.";
+
+            // 3. رسم الشكل
+            if (shape === 'circle') {
+                for (let i = 0; i < divisions; i++) {
+                    const angle = (2 * Math.PI) / divisions;
+                    const startAngle = i * angle;
+                    const endAngle = (i + 1) * angle;
+                    
+                    const x1 = 200 + 150 * Math.cos(startAngle);
+                    const y1 = 200 + 150 * Math.sin(startAngle);
+                    const x2 = 200 + 150 * Math.cos(endAngle);
+                    const y2 = 200 + 150 * Math.sin(endAngle);
+                    
+                    const pathData = `M 200 200 L ${x1} ${y1} A 150 150 0 0 1 ${x2} ${y2} Z`;
+                    
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path.setAttribute("d", pathData);
+                    path.setAttribute("class", `shape-element ${shadedParts.includes(i) ? 'shaded' : 'unshaded'}`);
+                    path.onclick = () => togglePart(i);
+                    svg.appendChild(path);
+                }
+            } else {
+                const rectWidth = 300;
+                const rectHeight = 150;
+                const segmentWidth = rectWidth / divisions;
+                
+                for (let i = 0; i < divisions; i++) {
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("x", 50 + (i * segmentWidth));
+                    rect.setAttribute("y", 125);
+                    rect.setAttribute("width", segmentWidth);
+                    rect.setAttribute("height", rectHeight);
+                    rect.setAttribute("class", `shape-element ${shadedParts.includes(i) ? 'shaded' : 'unshaded'}`);
+                    rect.onclick = () => togglePart(i);
+                    svg.appendChild(rect);
+                }
+            }
+        }
+
+        updateView();
+    </script>
+</body>
+</html>
