@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>محدد الكسور المرجعية الذكي</title>
+    <style>
+        :root {
+            --bg: #f0f9ff;
+            --card: #ffffff;
+            --primary: #0284c7;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --text: #1e293b;
+        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .main-card { background: var(--card); border-radius: 2.5rem; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); width: 100%; max-width: 500px; text-align: center; border: 4px solid #fff; }
+
+        /* Main Display Fraction (Using Flex as it works fine here) */
+        .main-frac { display: inline-flex; flex-direction: column; align-items: center; margin-bottom: 20px; font-weight: 900; font-size: 3.5rem; color: var(--primary); line-height: 1; }
+        .main-frac .bar { width: 50px; height: 5px; background: var(--primary); margin: 5px 0; border-radius: 3px; }
+
+        /* 
+           ULTIMATE SOLID FRACTION (For Buttons and Labels): 
+           Using explicit block layout to guarantee vertical stacking.
+        */
+        .frac-solid {
+            display: inline-block;
+            text-align: center;
+            vertical-align: middle;
+            font-weight: 900 !important;
+            opacity: 1 !important;
+            line-height: 1.1;
+        }
+        .frac-solid .num {
+            display: block;
+            width: 100%;
+        }
+        .frac-solid .bar {
+            display: block;
+            width: 100%;
+            height: 3px;
+            margin: 2px 0;
+            border-radius: 2px;
+        }
+        .frac-solid .den {
+            display: block;
+            width: 100%;
+        }
+
+        /* Specific styles for Label 1/2 (Black) */
+        .frac-label { font-size: 1.1rem; color: #000000; width: 15px; }
+        .frac-label .bar { background-color: #000000; height: 2px; }
+
+        /* Specific styles for Button 1/2 (White) */
+        .frac-btn { font-size: 1.5rem; color: #ffffff !important; width: 25px; }
+        .frac-btn .bar { background-color: #ffffff !important; height: 3px; }
+
+        /* 
+           Number Line & Marks 
+        */
+        .track-wrapper { margin: 40px 0; position: relative; direction: ltr; }
+        .track { height: 12px; background: #cbd5e1; border-radius: 6px; width: 100%; cursor: pointer; }
+        
+        /* Interactive Guess Marker (Orange Ball) */
+        .marker { position: absolute; top: -10px; width: 32px; height: 32px; background: var(--accent); border-radius: 50%; transform: translateX(-50%); box-shadow: 0 4px 6px rgba(0,0,0,0.15); pointer-events: none; }
+        
+        /* Exact Mathematical Marker (Green Target Indicator) */
+        .exact-marker { position: absolute; top: -18px; width: 4px; height: 48px; background: var(--success); transform: translateX(-50%); border-radius: 2px; pointer-events: none; transition: 0.3s; }
+        .exact-marker::after { content: "📍"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 1.3rem; }
+
+        /* Labels Styling */
+        .labels { display: flex; justify-content: space-between; margin-top: 15px; font-weight: 900; font-size: 1.3rem; color: #000000; align-items: center; }
+
+        /* 
+           Buttons and Layout 
+        */
+        .bench-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        button { padding: 15px; border: none; border-radius: 1rem; background: var(--primary); color: #ffffff; font-weight: 900; font-size: 1.5rem; cursor: pointer; transition: 0.2s; min-height: 80px; display: flex; justify-content: center; align-items: center; opacity: 1 !important; }
+        button:hover { background: #0369a1; transform: scale(1.02); }
+        #next-btn { margin-top: 20px; width: 100%; background: var(--success); }
+
+        #feedback { font-size: 1.4rem; font-weight: bold; margin-top: 20px; min-height: 40px; }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        <h2 style="color: var(--primary); margin-top: 0;">🎯 حدد الكسر على الخط</h2>
+        
+        <!-- Main Fraction -->
+        <div id="fraction-display" class="main-frac">
+            <span id="num">1</span>
+            <div class="bar"></div>
+            <span id="den">4</span>
+        </div>
+
+        <p style="font-size: 1.2rem; font-weight: bold;">أين يقع هذا الكسر تقريباً؟ اضغط على خط الأعداد</p>
+
+        <!-- Number Line (Forced LTR to maintain 0-left to 1-right) -->
+        <div class="track-wrapper" dir="ltr">
+            <div class="track" id="line-track" onclick="handleLineClick(event)"></div>
+            <!-- Guess Marker -->
+            <div id="marker" class="marker" style="display: none;"></div>
+            <!-- Ideal Exact Target Marker -->
+            <div id="exact-marker" class="exact-marker" style="display: none;"></div>
+            
+            <div class="labels">
+                <span>0</span>
+                <!-- Solid Vertical Fraction for 1/2 label -->
+                <div class="frac-solid frac-label">
+                    <span class="num">1</span>
+                    <span class="bar"></span>
+                    <span class="den">2</span>
+                </div>
+                <span>1</span>
+            </div>
+        </div>
+
+        <!-- 
+           Benchmark Selection Section 
+        -->
+        <div id="benchmark-step" style="display: none;">
+            <p style="font-size: 1.2rem; font-weight: bold;">إلى أي كسر مرجعي أقرب؟</p>
+            <div class="bench-grid">
+                <button onclick="checkBenchmark(0)">0</button>
+                <button onclick="checkBenchmark(0.5)">
+                    <!-- Solid Vertical Fraction for button -->
+                    <div class="frac-solid frac-btn">
+                        <span class="num">1</span>
+                        <span class="bar"></span>
+                        <span class="den">2</span>
+                    </div>
+                </button>
+                <button onclick="checkBenchmark(1)">1</button>
+            </div>
+        </div>
+
+        <div id="feedback"></div>
+        <button id="next-btn" style="display: none;" onclick="newProblem()">كسر جديد 🔄</button>
+    </div>
+
+    <script>
+        let currentN, currentD;
+        let isPositionAccepted = false;
+
+        // Reset game with new numbers
+        function newProblem() {
+            currentD = [3, 4, 5, 6, 8, 10][Math.floor(Math.random() * 6)];
+            currentN = Math.floor(Math.random() * (currentD - 1)) + 1;
+            isPositionAccepted = false;
+            
+            document.getElementById('num').innerText = currentN;
+            document.getElementById('den').innerText = currentD;
+            
+            document.getElementById('marker').style.display = 'none';
+            document.getElementById('exact-marker').style.display = 'none';
+            document.getElementById('benchmark-step').style.display = 'none';
+            document.getElementById('feedback').innerText = "";
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        /* 
+           Validate click accuracy on the number line 
+        */
+        function handleLineClick(e) {
+            const track = document.getElementById('line-track');
+            const marker = document.getElementById('marker');
+            const exactMarker = document.getElementById('exact-marker');
+            const rect = track.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+            
+            // Safe boundaries
+            const safePercentage = Math.max(0, Math.min(100, percentage));
+            
+            // Visual Update
+            marker.style.left = safePercentage + '%';
+            marker.style.display = 'block';
+
+            // Pedagogical estimation check:
+            const actualVal = currentN / currentD;
+            const actualPercentage = actualVal * 100;
+            const diff = Math.abs(safePercentage - actualPercentage);
+            const tolerance = 15; // Generous 15% tolerance for kids representation
+
+            const feedback = document.getElementById('feedback');
+
+            if (diff <= tolerance) {
+                isPositionAccepted = true;
+                feedback.innerText = "رائع! تقدير متميز ومقارب جداً لموقع الكسر 🎯";
+                feedback.style.color = "var(--success)";
+                
+                // Show exact position helper pin
+                exactMarker.style.left = actualPercentage + '%';
+                exactMarker.style.display = 'block';
+                
+                // Reveal benchmark choices
+                document.getElementById('benchmark-step').style.display = 'block';
+            } else {
+                isPositionAccepted = false;
+                feedback.innerText = "الموضع غير دقيق تماماً، حاول الضغط على مكان أقرب للكسر 🔍";
+                feedback.style.color = "var(--accent)";
+                document.getElementById('benchmark-step').style.display = 'none';
+                exactMarker.style.display = 'none';
+            }
+        }
+
+        /* 
+           Verify chosen benchmark fraction using absolute distance calculation
+        */
+        function checkBenchmark(val) {
+            if (!isPositionAccepted) return; // Prevent answering before correct positioning
+
+            const actualVal = currentN / currentD;
+            
+            // Calculate absolute mathematical distances to each benchmark
+            const distTo0 = Math.abs(actualVal - 0);
+            const distToHalf = Math.abs(actualVal - 0.5);
+            const distTo1 = Math.abs(actualVal - 1);
+            
+            // Find the true minimum distance (the closest benchmark)
+            const minDist = Math.min(distTo0, distToHalf, distTo1);
+            
+            // Accept the choice if it matches the minimum distance (allowing tiny float precision margin)
+            let correct = false;
+            if (val === 0 && Math.abs(distTo0 - minDist) < 0.0001) correct = true;
+            else if (val === 0.5 && Math.abs(distToHalf - minDist) < 0.0001) correct = true;
+            else if (val === 1 && Math.abs(distTo1 - minDist) < 0.0001) correct = true;
+
+            const feedback = document.getElementById('feedback');
+            if (correct) {
+                feedback.innerHTML = "أحسنت! الإجابة والتقدير صحيحة وممتازة 🌟👏";
+                feedback.style.color = "var(--success)";
+                document.getElementById('next-btn').style.display = 'block';
+            } else {
+                feedback.innerText = "التقدير للموقع رائع، ولكن فكر مجدداً في الكسر المرجعي الأقرب 🤔";
+                feedback.style.color = "var(--accent)";
+            }
+        }
+
+        // Initialize first problem
+        newProblem();
+    </script>
+</body>
+</html>
