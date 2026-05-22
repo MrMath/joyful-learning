@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حل اللغز: الكسور المتكافئة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-radius: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <div class="w-full max-w-lg space-y-6">
+        <header class="text-center">
+            <h1 class="text-3xl font-black text-emerald-800">🧩 حل اللغز: الكسور</h1>
+            <p class="text-emerald-600 font-bold mt-2">اكتشف المجهول وكن بطل الكسور!</p>
+        </header>
+
+        <section id="game-container" class="glass-card p-8 border-4 border-emerald-100 text-center">
+            <div id="puzzle-view">
+                <div class="flex justify-center items-center gap-6 text-4xl font-black mb-8 p-6 bg-white rounded-2xl shadow-inner">
+                    <div class="flex flex-col items-center text-emerald-700">
+                        <span id="pNum1">1</span>
+                        <div class="w-12 h-1 bg-emerald-700 rounded-full my-1"></div>
+                        <span id="pDen1">2</span>
+                    </div>
+                    <span class="text-emerald-400">=</span>
+                    <div class="flex flex-col items-center text-amber-600">
+                        <span id="pNum2">?</span>
+                        <div class="w-12 h-1 bg-amber-600 rounded-full my-1"></div>
+                        <span id="pDen2">8</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="text-emerald-800 font-bold">ما العملية التي استخدمناها؟</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="checkOp('multiply')" class="p-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl">ضرب ×</button>
+                        <button onclick="checkOp('divide')" class="p-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl">قسمة ÷</button>
+                    </div>
+                    
+                    <div id="input-area" class="hidden mt-6 animate-in fade-in">
+                        <p class="text-emerald-800 font-bold mb-2">أدخل الرقم المجهول:</p>
+                        <input type="number" id="answerInput" class="w-full p-4 text-center text-2xl border-4 border-emerald-200 rounded-xl focus:border-emerald-500 outline-none" placeholder="؟">
+                        <button onclick="submitAnswer()" class="w-full mt-4 p-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl">تحقق من الحل!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="feedback-view" class="hidden">
+                <div id="result-icon" class="text-6xl mb-4"></div>
+                <h2 id="result-text" class="text-2xl font-black mb-4"></h2>
+                <p id="explanation" class="text-emerald-700 mb-6"></p>
+                <button onclick="nextPuzzle()" class="w-full p-4 bg-emerald-600 text-white font-bold rounded-xl">لغز جديد!</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let currentPuzzle = {};
+        let selectedOp = '';
+
+        function generatePuzzle() {
+            // توليد كسر عشوائي
+            const baseDen = [2, 3, 4, 5][Math.floor(Math.random() * 4)];
+            const baseNum = Math.floor(Math.random() * (baseDen - 1)) + 1;
+            const factor = [2, 3, 4][Math.floor(Math.random() * 3)];
+            
+            const isMultiply = Math.random() > 0.5;
+            
+            if (isMultiply) {
+                currentPuzzle = {
+                    num1: baseNum, den1: baseDen,
+                    num2: baseNum * factor, den2: baseDen * factor,
+                    factor: factor,
+                    op: 'multiply',
+                    missingIsNum: Math.random() > 0.5
+                };
+            } else {
+                currentPuzzle = {
+                    num1: baseNum * factor, den1: baseDen * factor,
+                    num2: baseNum, den2: baseDen,
+                    factor: factor,
+                    op: 'divide',
+                    missingIsNum: Math.random() > 0.5
+                };
+            }
+
+            document.getElementById('pNum1').innerText = currentPuzzle.num1;
+            document.getElementById('pDen1').innerText = currentPuzzle.den1;
+            
+            if (currentPuzzle.missingIsNum) {
+                document.getElementById('pNum2').innerText = '?';
+                document.getElementById('pDen2').innerText = currentPuzzle.den2;
+            } else {
+                document.getElementById('pNum2').innerText = currentPuzzle.num2;
+                document.getElementById('pDen2').innerText = '?';
+            }
+        }
+
+        function checkOp(op) {
+            if (op === currentPuzzle.op) {
+                selectedOp = op;
+                document.getElementById('input-area').classList.remove('hidden');
+                // إخفاء الأزرار مؤقتاً أو تعطيلها
+            } else {
+                alert("حاول مرة أخرى! انظر إلى الأرقام، هل كبرت أم صغرت؟");
+            }
+        }
+
+        function submitAnswer() {
+            const val = parseInt(document.getElementById('answerInput').value);
+            const correctVal = currentPuzzle.missingIsNum ? currentPuzzle.num2 : currentPuzzle.den2;
+            
+            document.getElementById('puzzle-view').classList.add('hidden');
+            document.getElementById('feedback-view').classList.remove('hidden');
+            
+            if (val === correctVal) {
+                document.getElementById('result-icon').innerText = "🎉";
+                document.getElementById('result-text').innerText = "إجابة صحيحة!";
+                document.getElementById('result-text').className = "text-2xl font-black mb-4 text-emerald-600";
+                document.getElementById('explanation').innerText = `أحسنت! لقد قمت بـ ${currentPuzzle.op === 'multiply' ? 'الضرب' : 'القسمة'} في ${currentPuzzle.factor} لتصل إلى الكسر المتكافئ.`;
+            } else {
+                document.getElementById('result-icon').innerText = "❌";
+                document.getElementById('result-text').innerText = "حاول مجدداً!";
+                document.getElementById('result-text').className = "text-2xl font-black mb-4 text-red-600";
+                document.getElementById('explanation').innerText = `الإجابة الصحيحة كانت ${correctVal}. تذكر أن الكسرين المتكافئين يحتاجان لنفس العملية في البسط والمقام.`;
+            }
+        }
+
+        function nextPuzzle() {
+            document.getElementById('puzzle-view').classList.remove('hidden');
+            document.getElementById('feedback-view').classList.add('hidden');
+            document.getElementById('input-area').classList.add('hidden');
+            document.getElementById('answerInput').value = '';
+            generatePuzzle();
+        }
+
+        window.onload = generatePuzzle;
+    </script>
+</body>
+</html>
