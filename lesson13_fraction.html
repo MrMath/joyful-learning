@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مختبر الكسور المتكافئة المطور</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-radius: 2rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .animate-pop { animation: pop 0.3s ease-out; }
+        @keyframes pop { 0% { transform: scale(0.95); } 100% { transform: scale(1); } }
+        .bar-segment { transition: all 0.3s ease; border-left: 1px solid rgba(255,255,255,0.5); }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <div class="w-full max-w-lg space-y-6">
+        <header class="text-center">
+            <h1 class="text-3xl font-black text-emerald-800">🧪 مختبر الكسور المتكافئة</h1>
+            <p class="text-emerald-600 font-bold mt-2">شاهد الكسر بشكل راسي وبصري!</p>
+        </header>
+
+        <section class="glass-card p-6 border-4 border-emerald-100">
+            <div class="mb-8 space-y-8">
+                
+                <!-- 1. الشريط المرجعي (1/2) -->
+                <div class="flex items-center gap-4">
+                    <!-- الكسر الرأسي المرجعي -->
+                    <div class="w-16 flex flex-col items-center font-black text-emerald-800 text-xl">
+                        <span>1</span>
+                        <div class="w-full h-0.5 bg-emerald-800"></div>
+                        <span>2</span>
+                    </div>
+                    <!-- الشريط البصري المرجعي -->
+                    <div class="flex flex-1 h-12 rounded-xl overflow-hidden border-2 border-emerald-200">
+                        <div class="flex-1 bg-emerald-500"></div>
+                        <div class="flex-1 bg-emerald-100"></div>
+                    </div>
+                </div>
+                
+                <!-- 2. الشريط الديناميكي (يتغير) -->
+                <div class="flex items-center gap-4">
+                    <!-- الكسر الرأسي الديناميكي -->
+                    <div id="dynamicFractionLabel" class="w-16 flex flex-col items-center font-black text-amber-600 text-xl transition-all duration-300">
+                        <span id="labelNum">1</span>
+                        <div class="w-full h-0.5 bg-amber-600"></div>
+                        <span id="labelDen">2</span>
+                    </div>
+                    <!-- الشريط البصري الديناميكي -->
+                    <div id="rightVisual" class="flex flex-1 h-12 rounded-xl overflow-hidden border-2 border-amber-200">
+                        <!-- سيتم تعبئة هذا بواسطة JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="equation-display" class="text-center font-bold text-emerald-700 mb-6 text-lg min-h-[3rem] bg-white p-3 rounded-xl shadow-inner">
+                ابدأ باختيار عملية لتغيير الكسر!
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button onclick="operate('multiply', 2)" class="p-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all hover:scale-105">× 2</button>
+                <button onclick="operate('multiply', 3)" class="p-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all hover:scale-105">× 3</button>
+                <button onclick="operate('multiply', 4)" class="p-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl transition-all hover:scale-105">× 4</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="operate('divide', 2)" class="p-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all hover:scale-105">÷ 2</button>
+                <button onclick="operate('divide', 3)" class="p-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all hover:scale-105">÷ 3</button>
+                <button onclick="operate('divide', 4)" class="p-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl transition-all hover:scale-105">÷ 4</button>
+            </div>
+            
+            <button onclick="resetLab()" class="w-full mt-6 p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-xl transition-all">إعادة تعيين</button>
+            <p id="feedback" class="mt-4 text-sm font-bold text-gray-600 text-center min-h-[1.5rem]"></p>
+        </section>
+    </div>
+
+    <script>
+        let rightNum = 1;
+        let rightDen = 2;
+
+        // دالة رسم الأشرطة الديناميكية
+        function renderVisuals() {
+            const container = document.getElementById('rightVisual');
+            container.innerHTML = '';
+            
+            // تقسيم الشريط بناءً على المقام
+            for (let i = 0; i < rightDen; i++) {
+                const seg = document.createElement('div');
+                // تلوين الأجزاء الملونة (البسط) باللون البرتقالي
+                seg.className = `bar-segment flex-1 ${i < rightNum ? 'bg-amber-500' : 'bg-amber-100'}`;
+                container.appendChild(seg);
+            }
+        }
+
+        function operate(type, factor) {
+            const feedback = document.getElementById('feedback');
+            const eqDisplay = document.getElementById('equation-display');
+            const labelContainer = document.getElementById('dynamicFractionLabel');
+
+            if (type === 'multiply') {
+                rightNum *= factor;
+                rightDen *= factor;
+                eqDisplay.innerText = `ضربنا الكسر في ${factor} ليصبح ${rightNum}/${rightDen}`;
+                feedback.innerHTML = "💡 الضرب زاد عدد الأجزاء لكن المساحة الملونة بقيت ثابتة!";
+            } else {
+                if (rightNum % factor === 0 && rightDen % factor === 0) {
+                    if (rightNum / factor < 1 || rightDen / factor < 2) {
+                         feedback.innerHTML = "⚠️ لا يمكن تبسيط الكسر أكثر!";
+                         return;
+                    }
+                    rightNum /= factor;
+                    rightDen /= factor;
+                    eqDisplay.innerText = `قسمنا الكسر على ${factor} ليصبح ${rightNum}/${rightDen}`;
+                    feedback.innerHTML = "✂️ القسمة بسطت الكسر وجعلته أسهل!";
+                } else {
+                    feedback.innerHTML = "⚠️ لا يمكن القسمة على هذا العدد بالتساوي!";
+                    return;
+                }
+            }
+            
+            // تحديث الواجهة
+            labelContainer.classList.add('animate-pop');
+            setTimeout(() => labelContainer.classList.remove('animate-pop'), 300);
+            
+            updateDisplay();
+            renderVisuals();
+        }
+
+        function resetLab() {
+            rightNum = 1;
+            rightDen = 2;
+            document.getElementById('equation-display').innerText = "تمت العودة للبداية!";
+            document.getElementById('feedback').innerText = "";
+            updateDisplay();
+            renderVisuals();
+        }
+
+        function updateDisplay() {
+            document.getElementById('labelNum').innerText = rightNum;
+            document.getElementById('labelDen').innerText = rightDen;
+        }
+
+        // التهيئة عند التحميل
+        window.onload = renderVisuals;
+    </script>
+</body>
+</html>
