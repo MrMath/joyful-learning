@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مهمة الإطعام: سلاحف النينجا</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .pizza-slice { transition: all 0.3s ease; cursor: pointer; }
+        .pizza-slice:hover { opacity: 0.8; }
+    </style>
+</head>
+<body class="bg-green-50 min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+    <div id="app" class="max-w-5xl w-full">
+        <!-- Header -->
+        <header class="w-full flex justify-between items-center mb-8">
+            <div class="flex items-center gap-3">
+                <div class="bg-orange-500 p-3 rounded-2xl shadow-lg text-white">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2z"/><path d="m16.5 12.5-6.5 6.5"/></svg>
+                </div>
+                <h1 class="text-3xl md:text-5xl font-black text-green-900 drop-shadow-sm">مهمة الإطعام 🍕</h1>
+            </div>
+            <div id="score-container" class="hidden">
+                <div class="bg-white px-6 py-2 rounded-2xl shadow-md border-b-4 border-yellow-400 flex items-center gap-2">
+                    <span class="text-xl font-black text-green-800" id="score-display">0</span>
+                    <span class="text-yellow-500">⭐</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="game-view" class="w-full">
+        </main>
+    </div>
+
+    <script>
+        const LEVELS = {
+            EASY: { id: 'EASY', label: 'سهل', color: 'bg-green-500', maxMultiplier: 3, denominators: [3, 4] },
+            MEDIUM: { id: 'MEDIUM', label: 'متوسط', color: 'bg-orange-500', maxMultiplier: 5, denominators: [5, 6] },
+            HARD: { id: 'HARD', label: 'صعب', color: 'bg-red-500', maxMultiplier: 7, denominators: [8, 10] }
+        };
+
+        const TURTLES = [
+            { name: 'ليوناردو', color: '#3b82f6' },
+            { name: 'رافاييل', color: '#ef4444' },
+            { name: 'مايكل أنجلو', color: '#f97316' },
+            { name: 'دوناتيلو', color: '#a855f7' }
+        ];
+
+        let gameState = 'START';
+        let currentLevel = null;
+        let currentTurtle = TURTLES[0];
+        let problem = { multiplier: 0, denominator: 0 };
+        let collectedPieces = [];
+        let score = 0;
+
+        function renderVerticalFraction(num, den, colorClass = "text-sky-700") {
+            return `
+                <div class="inline-flex flex-col items-center justify-center mx-1 align-middle ${colorClass}">
+                    <span class="font-black text-2xl">${num}</span>
+                    <div class="w-full h-1 bg-current rounded-full"></div>
+                    <span class="font-black text-2xl">${den}</span>
+                </div>
+            `;
+        }
+
+        function generateProblem(lvl) {
+            currentLevel = lvl;
+            const denom = lvl.denominators[Math.floor(Math.random() * lvl.denominators.length)];
+            const mult = Math.floor(Math.random() * (denom - 1)) + 2;
+            problem = { multiplier: mult, denominator: denom };
+            currentTurtle = TURTLES[Math.floor(Math.random() * TURTLES.length)];
+            collectedPieces = [];
+            gameState = 'PLAYING';
+            render();
+        }
+
+        function togglePiece(index) {
+            if (gameState !== 'PLAYING') return;
+            const exists = collectedPieces.includes(index);
+            if (exists) {
+                collectedPieces = collectedPieces.filter(i => i !== index);
+            } else if (collectedPieces.length < problem.multiplier) {
+                collectedPieces.push(index);
+            }
+            
+            if (collectedPieces.length === problem.multiplier) {
+                gameState = 'SUCCESS';
+                score += 10;
+            }
+            render();
+        }
+
+        function getTurtleSVG(turtle, size = 120) {
+            return `
+                <svg width="${size}" height="${size}" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="#4ade80" stroke="#166534" strokeWidth="3" />
+                    <rect x="5" y="35" width="90" height="20" rx="10" fill="${turtle.color}" />
+                    <circle cx="35" cy="45" r="8" fill="white" />
+                    <circle cx="65" cy="45" r="8" fill="white" />
+                    <circle cx="35" cy="45" r="4" fill="black" />
+                    <circle cx="65" cy="45" r="4" fill="black" />
+                </svg>
+            `;
+        }
+
+        function getPizzaSVG() {
+            const size = 260;
+            const center = size / 2;
+            const radius = center - 10;
+            let slices = '';
+            
+            for(let i = 0; i < problem.denominator; i++) {
+                const start = (i * 360) / problem.denominator;
+                const end = ((i + 1) * 360) / problem.denominator;
+                const x1 = center + radius * Math.cos((Math.PI * (start - 90)) / 180);
+                const y1 = center + radius * Math.sin((Math.PI * (start - 90)) / 180);
+                const x2 = center + radius * Math.cos((Math.PI * (end - 90)) / 180);
+                const y2 = center + radius * Math.sin((Math.PI * (end - 90)) / 180);
+                const isSelected = collectedPieces.includes(i);
+                
+                slices += `
+                    <path d="M ${center} ${center} L ${x1} ${y1} A ${radius} ${radius} 0 0 1 ${x2} ${y2} Z" 
+                          fill="${isSelected ? '#ea580c' : '#fef3c7'}" 
+                          stroke="#92400e" stroke-width="2" class="pizza-slice" 
+                          onclick="togglePiece(${i})" />
+                `;
+            }
+            return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${slices}</svg>`;
+        }
+
+        function render() {
+            const container = document.getElementById('game-view');
+            const scoreContainer = document.getElementById('score-container');
+            
+            if (gameState !== 'START') {
+                scoreContainer.classList.remove('hidden');
+                document.getElementById('score-display').innerText = score;
+            } else {
+                scoreContainer.classList.add('hidden');
+            }
+
+            if (gameState === 'START') {
+                container.innerHTML = `
+                    <div class="bg-white p-10 rounded-[3rem] shadow-2xl text-center space-y-8 border-b-[12px] border-green-200">
+                        <div class="space-y-4">
+                            <h2 class="text-3xl font-black text-green-900">سلاحف النينجا جائعون!</h2>
+                            <h3 class="text-2xl font-bold text-green-700">اختر المستوى:</h3>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                            ${Object.values(LEVELS).map(lvl => `
+                                <button onclick="generateProblem(${JSON.stringify(lvl).replace(/"/g, "'")})" class="${lvl.color} text-white p-6 rounded-3xl text-2xl font-black hover:scale-105 transition-transform">
+                                    ${lvl.label}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-b-[12px] border-orange-100 flex flex-col items-center">
+                            <!-- تغيير التنسيق ليصبح السؤال أسفل السلحفاة في سطر واحد -->
+                            <div class="flex flex-col items-center gap-4 mb-6 w-full">
+                                ${getTurtleSVG(currentTurtle, 80)}
+                                <div class="bg-sky-50 p-4 rounded-2xl w-full text-center flex flex-row items-center justify-center gap-2 flex-wrap">
+                                    <p class="text-sky-700 font-bold">أريد ${problem.multiplier} قطع من</p>
+                                    ${renderVerticalFraction(1, problem.denominator, "text-orange-600")}
+                                    <p class="text-sky-700 font-bold">بيتزا!</p>
+                                </div>
+                            </div>
+                            <div class="py-4">${getPizzaSVG()}</div>
+                            <div class="flex gap-2 mt-4">
+                                ${Array.from({length: problem.multiplier}).map((_, i) => `
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center ${i < collectedPieces.length ? 'bg-orange-500 text-white' : 'bg-gray-200'}">
+                                        ${i < collectedPieces.length ? '🍕' : i+1}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-8 rounded-[3rem] shadow-xl border-4 border-green-50 flex flex-col items-center justify-center gap-6">
+                            <div class="flex flex-col items-center text-4xl font-black text-green-600">
+                                <span>حساب المطلوب:</span>
+                                <div class="flex items-center mt-4">
+                                    <span>${problem.multiplier} × </span>
+                                    ${renderVerticalFraction(1, problem.denominator, "text-green-600")}
+                                </div>
+                            </div>
+                            
+                            ${gameState === 'SUCCESS' ? `
+                                <div class="w-full border-t-2 border-green-100 pt-6 text-center">
+                                    <h3 class="text-2xl font-black text-green-800 mb-2">الناتج:</h3>
+                                    <div class="flex justify-center items-center">
+                                        ${renderVerticalFraction(problem.multiplier, problem.denominator, "text-green-700")}
+                                    </div>
+                                    <button onclick="gameState='START'; render()" class="mt-8 bg-green-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors">لعب جديد</button>
+                                </div>
+                            ` : ''}
+                            
+                            <button onclick="gameState='START'; render()" class="text-gray-400 mt-4 text-sm hover:text-gray-600">العودة للقائمة</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
