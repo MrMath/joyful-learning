@@ -23,10 +23,17 @@
                 </div>
                 <h1 class="text-3xl md:text-5xl font-black text-green-900 drop-shadow-sm">مهمة الإطعام 🍕</h1>
             </div>
-            <div id="score-container" class="hidden">
-                <div class="bg-white px-6 py-2 rounded-2xl shadow-md border-b-4 border-yellow-400 flex items-center gap-2">
-                    <span class="text-xl font-black text-green-800" id="score-display">0</span>
-                    <span class="text-yellow-500">⭐</span>
+            <div id="status-container" class="hidden">
+                <div class="bg-white px-6 py-2 rounded-2xl shadow-md border-b-4 border-yellow-400 flex items-center gap-4">
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 block">السؤال</span>
+                        <span class="text-xl font-black text-green-800" id="progress-display">0/10</span>
+                    </div>
+                    <div class="h-8 w-px bg-gray-200"></div>
+                    <div class="text-center">
+                        <span class="text-sm text-gray-500 block">النقاط</span>
+                        <span class="text-xl font-black text-green-800" id="score-display">0</span>
+                    </div>
                 </div>
             </div>
         </header>
@@ -37,6 +44,7 @@
     </div>
 
     <script>
+        const TOTAL_QUESTIONS = 10;
         const LEVELS = {
             EASY: { id: 'EASY', label: 'سهل', color: 'bg-green-500', maxMultiplier: 3, denominators: [3, 4] },
             MEDIUM: { id: 'MEDIUM', label: 'متوسط', color: 'bg-orange-500', maxMultiplier: 5, denominators: [5, 6] },
@@ -56,6 +64,7 @@
         let problem = { multiplier: 0, denominator: 0 };
         let collectedPieces = [];
         let score = 0;
+        let currentQuestionIndex = 0;
 
         function renderVerticalFraction(num, den, colorClass = "text-sky-700") {
             return `
@@ -69,12 +78,22 @@
 
         function generateProblem(lvl) {
             currentLevel = lvl;
-            const denom = lvl.denominators[Math.floor(Math.random() * lvl.denominators.length)];
-            const mult = Math.floor(Math.random() * (denom - 1)) + 2;
-            problem = { multiplier: mult, denominator: denom };
-            currentTurtle = TURTLES[Math.floor(Math.random() * TURTLES.length)];
-            collectedPieces = [];
-            gameState = 'PLAYING';
+            currentQuestionIndex = 0;
+            score = 0;
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex >= TOTAL_QUESTIONS) {
+                gameState = 'FINISHED';
+            } else {
+                const denom = currentLevel.denominators[Math.floor(Math.random() * currentLevel.denominators.length)];
+                const mult = Math.floor(Math.random() * (denom - 1)) + 2;
+                problem = { multiplier: mult, denominator: denom };
+                currentTurtle = TURTLES[Math.floor(Math.random() * TURTLES.length)];
+                collectedPieces = [];
+                gameState = 'PLAYING';
+            }
             render();
         }
 
@@ -90,6 +109,7 @@
             if (collectedPieces.length === problem.multiplier) {
                 gameState = 'SUCCESS';
                 score += 10;
+                currentQuestionIndex++;
             }
             render();
         }
@@ -134,13 +154,14 @@
 
         function render() {
             const container = document.getElementById('game-view');
-            const scoreContainer = document.getElementById('score-container');
+            const statusContainer = document.getElementById('status-container');
             
-            if (gameState !== 'START') {
-                scoreContainer.classList.remove('hidden');
+            if (gameState === 'PLAYING' || gameState === 'SUCCESS' || gameState === 'FINISHED') {
+                statusContainer.classList.remove('hidden');
                 document.getElementById('score-display').innerText = score;
+                document.getElementById('progress-display').innerText = `${currentQuestionIndex}/${TOTAL_QUESTIONS}`;
             } else {
-                scoreContainer.classList.add('hidden');
+                statusContainer.classList.add('hidden');
             }
 
             if (gameState === 'START') {
@@ -159,11 +180,19 @@
                         </div>
                     </div>
                 `;
+            } else if (gameState === 'FINISHED') {
+                container.innerHTML = `
+                    <div class="bg-white p-10 rounded-[3rem] shadow-2xl text-center space-y-8 border-b-[12px] border-green-200">
+                        <h2 class="text-4xl font-black text-green-900">مهمة مكتملة! 🎉</h2>
+                        <div class="text-6xl font-black text-orange-500">${score}</div>
+                        <p class="text-xl text-gray-600">نقاطك النهائية</p>
+                        <button onclick="gameState='START'; render()" class="bg-green-500 text-white px-8 py-4 rounded-2xl font-black text-xl hover:bg-green-600 transition-colors">العودة للقائمة</button>
+                    </div>
+                `;
             } else {
                 container.innerHTML = `
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="bg-white p-8 rounded-[3rem] shadow-2xl border-b-[12px] border-orange-100 flex flex-col items-center">
-                            <!-- تغيير التنسيق ليصبح السؤال أسفل السلحفاة في سطر واحد -->
                             <div class="flex flex-col items-center gap-4 mb-6 w-full">
                                 ${getTurtleSVG(currentTurtle, 80)}
                                 <div class="bg-sky-50 p-4 rounded-2xl w-full text-center flex flex-row items-center justify-center gap-2 flex-wrap">
@@ -173,13 +202,6 @@
                                 </div>
                             </div>
                             <div class="py-4">${getPizzaSVG()}</div>
-                            <div class="flex gap-2 mt-4">
-                                ${Array.from({length: problem.multiplier}).map((_, i) => `
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center ${i < collectedPieces.length ? 'bg-orange-500 text-white' : 'bg-gray-200'}">
-                                        ${i < collectedPieces.length ? '🍕' : i+1}
-                                    </div>
-                                `).join('')}
-                            </div>
                         </div>
                         
                         <div class="bg-white p-8 rounded-[3rem] shadow-xl border-4 border-green-50 flex flex-col items-center justify-center gap-6">
@@ -197,7 +219,7 @@
                                     <div class="flex justify-center items-center">
                                         ${renderVerticalFraction(problem.multiplier, problem.denominator, "text-green-700")}
                                     </div>
-                                    <button onclick="gameState='START'; render()" class="mt-8 bg-green-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors">لعب جديد</button>
+                                    <button onclick="nextQuestion()" class="mt-8 bg-green-500 text-white px-8 py-3 rounded-xl font-bold hover:bg-green-600 transition-colors w-full">السؤال التالي ➡️</button>
                                 </div>
                             ` : ''}
                             
